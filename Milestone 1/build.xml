@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BCStudentWellnessSystem" default="build" basedir=".">
+
+  <!-- === Properties === -->
+  <property name="src.dir" value="src"/>
+  <property name="web.dir" value="WebContent"/>
+  <property name="build.dir" value="build"/>
+  <property name="classes.dir" value="${build.dir}/classes"/>
+  <property name="war.file" value="${build.dir}/BCStudentWellnessSystem.war"/>
+
+  <!-- === Clean Target === -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <!-- === Compile Java Files === -->
+  <target name="compile">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
+      <classpath>
+        <fileset dir="lib">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <!-- === Package WAR File === -->
+  <target name="war" depends="compile">
+    <mkdir dir="${build.dir}"/>
+    <war destfile="${war.file}" webxml="${web.dir}/WEB-INF/web.xml">
+      <fileset dir="${web.dir}"/>
+      <classes dir="${classes.dir}"/>
+    </war>
+  </target>
+
+  <!-- === Build All === -->
+  <target name="build" depends="clean, war"/>
+
+</project>
