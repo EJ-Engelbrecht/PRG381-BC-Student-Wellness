@@ -1,6 +1,12 @@
 package main.bc.service;
 
 
+import main.bc.dao.DBConnection;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class AuthServiceImpl implements AuthService  {
@@ -110,4 +116,18 @@ public class AuthServiceImpl implements AuthService  {
     public void valid_password(String password) {
 
     }
+
+    public boolean isTokenValid(String token) {
+        String sql = "SELECT 1 FROM users WHERE session_token = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, token);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

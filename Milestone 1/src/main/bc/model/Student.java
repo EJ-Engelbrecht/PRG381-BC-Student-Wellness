@@ -9,6 +9,7 @@ public class Student {
     private String phone;
     private String email;
     private String password;
+    private String sessionToken;
 
 
     //getters and setters for the Student Model class
@@ -53,4 +54,8 @@ public class Student {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getSessionToken() { return sessionToken; }
+    public void setSessionToken(String sessionToken) { this.sessionToken = sessionToken; }
+
 }
