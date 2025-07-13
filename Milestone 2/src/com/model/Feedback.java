@@ -1,9 +1,7 @@
-package com.model;
-
-public class Feedback {
+class Feedback {
     private String student;
     private int rating;
-    private String comments;
+    private ArrayList<String> Comments;
 
     public String getStudent() {
         return this.student;
@@ -21,7 +19,10 @@ public class Feedback {
         }
     }
 
-    public String getComments() {return comments;}
-    public void setComments(String comments) {this.comments = comments;}
-
+    public ArrayList<String> getComments(){
+        return Comments
+    }
+    public void setComments(String comment) {
+        Comments.add(comment);
+    }
 }
