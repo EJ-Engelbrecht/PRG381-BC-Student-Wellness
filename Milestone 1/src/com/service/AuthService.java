@@ -1,3 +1,4 @@
+//methods to validate user details in Impl class
 interface AuthService {
     void valid_phone_nr(String phone);
     void valid_email_format(String email);
