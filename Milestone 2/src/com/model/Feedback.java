@@ -1,7 +1,7 @@
 class Feedback {
     private String student;
     private int rating;
-    private String[] Comments;
+    private ArrayList<String> Comments;
 
     public String getStudent() {
         return this.student;
@@ -17,5 +17,12 @@ class Feedback {
         if (rating > 0 && rating <=10){
             this.rating = rating;
         }
+    }
+
+    public ArrayList<String> getComments(){
+        return Comments
+    }
+    public void setComments(String comment) {
+        Comments.add(comment);
     }
 }
