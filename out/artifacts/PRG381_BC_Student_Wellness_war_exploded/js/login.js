@@ -14,9 +14,10 @@ function validateLogin() {
             passwordMsg.innerHTML = "";
 
             const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-            // Email validation
+
+    // Email validation
             if (email.value.trim().length === 0) {
                 email.classList.add("invalid");
                 emailMsg.innerHTML += "<p>Please fill in a Email address.</p>";
@@ -39,7 +40,7 @@ function validateLogin() {
                 // Password complexity validation
                 if (!passwordRegex.test(password.value)) {
                     password.classList.add("invalid");
-                    passwordMsg.innerHTML += "<p>Password must contain at least 1 lowercase, 1 uppercase, 1 digit, and be at least 8 characters.</p>";
+                    passwordMsg.innerHTML += "<p>Password must contain at least 1 uppercase, 1 digit, and be at least 8 characters.</p>";
                     valid = false;
                 }
 
@@ -62,9 +63,9 @@ function validateLogin() {
 
             if (password.type === "password") {
                 password.type = "text";
-                icon.src = "images/eye-open.png"; // Change to open eye image
+                icon.src = "./images/eye-open.png"; // Change to open eye image
             } else {
                 password.type = "password";
-                icon.src = "images/eye-closed.png"; // Change to closed eye image
+                icon.src = "./images/eye-closed.png"; // Change to closed eye image
             }
         }
