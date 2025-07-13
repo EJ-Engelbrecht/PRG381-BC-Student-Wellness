@@ -1,0 +1,119 @@
+/* Base styling */
+body {
+
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card container */
+.card {
+    background-color: #ffffff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    width: 350px;
+    text-align: center;
+}
+
+/* Form inputs */
+.card input[type="text"],
+.card input[type="email"],
+.card input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Submit button */
+.card input[type="submit"] {
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+/* Button Hover */
+.card input[type="submit"]:hover {
+    background-color: #005fa3;
+}
+
+/* Headings */
+.card h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/*For incorect inputs borders*/
+input.invalid {
+    border: 2px solid red;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+    text-align: left;
+}
+
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+    width: 100%;
+    padding-right: 40px; /* space for icon */
+}
+
+.password-wrapper img {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.password-wrapper img:hover {
+    opacity: 1;
+}
+
+
+#step2 {
+    position: relative;
+}
+
+.back-arrow {
+    position: absolute;
+    top: -90px;
+    right: -11px;
+    width: 24px;
+    height: 24px;
+    background: url('../images/back-arrow.png') no-repeat center center;
+    background-size: contain;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 4px;
+    margin-bottom: 12px; /* <-- This adds spacing below the error message */
+}
