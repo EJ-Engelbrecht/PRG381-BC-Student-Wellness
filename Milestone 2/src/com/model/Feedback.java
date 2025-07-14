@@ -1,4 +1,8 @@
-class Feedback {
+package com.model;
+
+import java.util.ArrayList;
+
+public class Feedback {
     private String student;
     private int rating;
     private ArrayList<String> Comments;
@@ -20,7 +24,7 @@ class Feedback {
     }
 
     public ArrayList<String> getComments(){
-        return Comments
+        return Comments;
     }
     public void setComments(String comment) {
         Comments.add(comment);

@@ -9,6 +9,13 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class RegisterServlet extends HttpServlet {
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        main.bc.util.DBInitializer.initialize(); // Ensure DB and users table exist
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String studentNumber = request.getParameter("studentNumber");
         String name = request.getParameter("name");

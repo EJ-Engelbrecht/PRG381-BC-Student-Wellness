@@ -1,3 +1,9 @@
+package com.dao;
+
+import com.model.Feedback;
+
+import java.util.List;
+
 //Methods to interact with the Feedback Table
 interface FeedbackDAO {
     List<Feedback> getFeedback();

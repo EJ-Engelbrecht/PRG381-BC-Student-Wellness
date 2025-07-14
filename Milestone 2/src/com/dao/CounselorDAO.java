@@ -1,3 +1,9 @@
+package com.dao;
+
+import com.model.Counselor;
+
+import java.util.List;
+
 //Methods to interact with the Counselor Table
 interface CounselorDAO {
     List<Counselor> getCounselors();

@@ -10,11 +10,16 @@ public class FeedbackController {
             JOptionPane.showMessageDialog(null, "Rating must be between 1 and 5.");
             return false;
         }
-        if (f.getComments().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Comment cannot be empty.");
+
+        // Check if there are any comments and if at least one is not empty after trimming
+        boolean hasValidComment = f.getComments().stream()
+                .anyMatch(comment -> !comment.trim().isEmpty());
+
+        if (!hasValidComment) {
+            JOptionPane.showMessageDialog(null, "At least one non-empty comment is required.");
             return false;
         }
+
         return true;
     }
-
 }

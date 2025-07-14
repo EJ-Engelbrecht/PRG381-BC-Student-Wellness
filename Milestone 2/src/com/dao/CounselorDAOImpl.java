@@ -1,3 +1,15 @@
+package com.dao;
+
+import com.model.Appointment;
+import com.model.Counselor;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 class CounselorDAOImpl {
     private Connection conn;
 
@@ -8,7 +20,7 @@ class CounselorDAOImpl {
     public List<Counselor> getCounselors() {
         String sql = "SELECT * FROM Counselors";
 
-        List<Counselor> Counselors = new ArrayList<Appointment>();
+        List<Counselor> Counselors = new ArrayList<>();
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -21,7 +33,7 @@ class CounselorDAOImpl {
                 cs.setSpecialization(result.getString("specialization"));
                 cs.setAvailability(result.getBoolean("availability"));
 
-                Counselors.add(st);
+                Counselors.add(cs);
             }
 
 
