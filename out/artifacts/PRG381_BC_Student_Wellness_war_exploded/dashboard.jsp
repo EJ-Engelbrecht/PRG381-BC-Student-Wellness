@@ -278,6 +278,18 @@
 
         input.value = "";
     }
+
+    if (window.history && window.history.pushState) {
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.location.replace("login.jsp");
+        };
+    }
+
+    //Forces user to return to login.jsp after exiting dashboard.jsp
+    window.addEventListener("beforeunload", function(){
+        navigator.sendBeacon("LogoutServlet");
+    })
 </script>
 
 </body>

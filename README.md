@@ -29,37 +29,7 @@ After installing:
 
 ---
 
-## ✅ 3. Create the Database & Table
-
-### In pgAdmin:
-1. Expand **Servers > PostgreSQL 15**
-2. Right-click **Databases > Create > Database**
-    - Name it: `wellness`
-    - Click **Save**
-
-### Then:
-1. Select `wellness`
-2. Click the **Query Tool**
-3. Paste and run the following SQL:
-
-```sql
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    student_number VARCHAR(20) UNIQUE NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    surname VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    phone VARCHAR(20),
-    password VARCHAR(255) NOT NULL,
-    session_token VARCHAR(255)
-);
-```
-
-✅ Press the **Play button** (or `F5`) to execute.
-
----
-
-## ✅ 4. Install Apache Tomcat 9.0
+## ✅ 3. Install Apache Tomcat 9.0
 
 🔗 [Download Tomcat 9.0 - Windows Service Installer](https://tomcat.apache.org/download-90.cgi)
 
@@ -75,7 +45,7 @@ CREATE TABLE users (
 - ❌ Uncheck the option to view the README
 ---
 
-## ✅ 5. Add Tomcat to Environment Variables
+## ✅ 4. Add Tomcat to Environment Variables
 
 1. Press `Win + S` → Search for **Edit the system environment variables**
 2. In the new window, click **Environment Variables**
@@ -90,7 +60,7 @@ C:\Program Files\Apache Software Foundation\Tomcat 9.0
 
 ---
 
-## ✅ 6. Add PostgreSQL JDBC Driver to Tomcat
+## ✅ 5. Add PostgreSQL JDBC Driver to Tomcat
 
 🔗 [Download JDBC JAR - postgresql-42.7.3.jar](https://jdbc.postgresql.org/download/)
 
@@ -102,7 +72,7 @@ C:\Program Files\Apache Software Foundation\Tomcat 9.0\lib
 
 ---
 
-## ✅ 7. Set Up Tomcat in IntelliJ
+## ✅ 6. Set Up Tomcat in IntelliJ
 
 1. In IntelliJ: `File → Run → Edit Configurations`
 2. Press the `+` → **Tomcat Server > Local**
@@ -124,7 +94,7 @@ C:\Program Files\Apache Software Foundation\Tomcat 9.0\lib
 
 ---
 
-## ✅ 8. Run the Web App
+## ✅ 7. Run the Web App
 
 1. Click the **green play button** in the top-right of IntelliJ
 2. This will launch Tomcat and open your app in a browser

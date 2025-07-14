@@ -9,6 +9,14 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class LoginServlet extends HttpServlet {
+
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        main.bc.util.DBInitializer.initialize(); // Ensure DB and users table exist
+    }
+
     private Connection getConnection() throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/wellness";
         String user = "postgres";

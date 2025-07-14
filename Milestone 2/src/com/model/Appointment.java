@@ -1,9 +1,15 @@
-class Appointment {
+package com.model;
+
+import java.sql.Time;
+import java.util.Date;
+
+public class Appointment {
     private String student;
     private String counselor;
     private Date date;
     private Time time;
     private String status;
+
 
     public String getStudent(){
         return this.student;
@@ -39,4 +45,6 @@ class Appointment {
     public void setStatus(String status) {
         this.status = status;
     }
+
+
 }

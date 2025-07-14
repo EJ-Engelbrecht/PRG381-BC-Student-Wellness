@@ -1,16 +1,21 @@
 package main.bc.servlet;
 
 import main.bc.dao.DBConnection;
+import main.bc.util.PasswordUtil;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-
 public class RegisterServlet extends HttpServlet {
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        main.bc.util.DBInitializer.initialize(); // Ensure DB and users table exist
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String studentNumber = request.getParameter("studentNumber");
         String name = request.getParameter("name");
@@ -32,8 +37,10 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
+            // Hash password using utility
+            String hashedPassword = PasswordUtil.hashPassword(password);
+
             // Insert new user
-            String hashedPassword = hashPassword(password);
             PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO users (student_number, name, surname, email, phone, password) VALUES (?, ?, ?, ?, ?, ?)");
             insertStmt.setString(1, studentNumber);
             insertStmt.setString(2, name);
@@ -50,13 +57,5 @@ public class RegisterServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Server error. Please try again.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
-    }
-
-    private String hashPassword(String password) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] hashedBytes = md.digest(password.getBytes());
-        StringBuilder sb = new StringBuilder();
-        for (byte b : hashedBytes) sb.append(String.format("%02x", b));
-        return sb.toString();
     }
 }

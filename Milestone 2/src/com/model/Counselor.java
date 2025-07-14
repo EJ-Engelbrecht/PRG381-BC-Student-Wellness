@@ -1,4 +1,6 @@
-class Counselor {
+package com.model;
+
+public class Counselor {
     private String name;
     private String specialization;
     private boolean availability;
@@ -22,9 +24,14 @@ class Counselor {
     }
 
     public void changeAvailability(boolean availability) {
-        switch (this.availability) {
-            case true -> this.availability = false;
-            case false -> this.availability = true
+        if (this.availability) {
+            this.availability = false;
+        } else {
+            this.availability = true;
         }
     }
+    public void setAvailability(boolean availability) {
+        this.availability = availability;
+    }
+
 }
