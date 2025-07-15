@@ -56,7 +56,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
             System.out.println("Feedback added");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("k not added");
+            System.out.println("Feedback not added");
         }
     }
 
@@ -78,7 +78,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     public void deleteFeedback(String student) {
-        String sql = "DELETE FROM Counselor WHERE student = ?";
+        String sql = "DELETE FROM Feedback WHERE student = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, student);

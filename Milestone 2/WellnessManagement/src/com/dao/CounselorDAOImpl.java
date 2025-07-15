@@ -45,7 +45,7 @@ public class CounselorDAOImpl implements CounselorDAO {
     }
 
     public void registerCounselor(Counselor counselor) {
-        String sql = "INSERT INTO Counselor (name, specialization, availability) VALUES(?, ?, ?)";
+        String sql = "INSERT INTO Counselors (name, specialization, availability) VALUES(?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, counselor.getName());
@@ -62,7 +62,7 @@ public class CounselorDAOImpl implements CounselorDAO {
     }
 
     public void updateCounselor(Counselor counselor) {
-        String sql = "UPDATE Counselor SET specialization = ?, availability = ? WHERE name = ?";
+        String sql = "UPDATE Counselors SET specialization = ?, availability = ? WHERE name = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, counselor.getSpecialization());
@@ -79,7 +79,7 @@ public class CounselorDAOImpl implements CounselorDAO {
     }
 
     public void deleteCounselor(String name) {
-        String sql = "DELETE FROM Counselor WHERE name = ?";
+        String sql = "DELETE FROM Counselors WHERE name = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
