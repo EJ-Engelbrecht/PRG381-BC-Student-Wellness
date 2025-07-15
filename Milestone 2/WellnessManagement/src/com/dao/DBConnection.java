@@ -5,9 +5,25 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private static final  String URL = "jdbc:postgresql://localhost:5432/your_db";
-    private static final String USER = "your_user";
-    private static final String PASSWORD = "your_password";
+    private static final String PROPERTIES_FILE = "/com/Resources/config.properties";
+    private static String URL;
+    private static String USER;
+    private static String PASSWORD;
+
+    static {
+        try (InputStream input = DBConnection.class.getResourceAsStream(PROPERTIES_FILE)) {
+            Properties prop = new Properties();
+            if (input == null) {
+                throw new RuntimeException("Unable to find " + PROPERTIES_FILE);
+            }
+            prop.load(input);
+            URL = prop.getProperty("db.url");
+            USER = prop.getProperty("db.user");
+            PASSWORD = prop.getProperty("db.password");
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to load DB config", ex);
+        }
+    }
 
     public static Connection getConnection() throws SQLException {
         try {
