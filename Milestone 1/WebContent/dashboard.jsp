@@ -1,17 +1,10 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.sql.*, javax.servlet.http.*" session="true" %>
 
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
     response.setHeader("Pragma", "no-cache"); // HTTP 1.0
     response.setDateHeader("Expires", 0); // Proxies
 %>
-
-<%@ page import="java.sql.*, javax.servlet.http.*" %>
-<%@ page session="false" %>
-
-<%@ page import="javax.servlet.http.*, java.sql.*" %>
-
-<%@ page import="java.sql.*, javax.servlet.http.*" %>
-<%@ page session="false" %>
 
 <%
     // Block browser caching
@@ -34,16 +27,27 @@
     // Validate token
     boolean valid = false;
     String studentName = "Unknown";
+    String StudentNumber = "Unknown";
+    String StudentSurname = "Unknown";
     if (token != null) {
         try {
             Class.forName("org.postgresql.Driver");
             Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wellness", "postgres", "sFicA");
-            PreparedStatement stmt = conn.prepareStatement("SELECT name FROM users WHERE session_token = ?");
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT student_number, name, surname FROM users WHERE session_token = ?");
             stmt.setString(1, token);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 valid = true;
+                StudentNumber = rs.getString("student_number");
                 studentName = rs.getString("name");
+                StudentSurname = rs.getString("surname");
+
+                // Save to session for later use
+                session.setAttribute("StudentNumber", StudentNumber);
+                session.setAttribute("studentName", studentName);
+                session.setAttribute("StudentSurname", StudentSurname);
             }
             conn.close();
         } catch (Exception e) {
@@ -58,227 +62,178 @@
 %>
 
 
-<!DOCTYPE html>
 <html>
 <head>
     <title>Student Dashboard</title>
     <style>
-        /* Page background and font */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f7fa;
+            margin: 0;
             padding: 30px;
-            text-align: center;
         }
 
-        /* Card container */
-        .dashboard-card {
-            background: white;
-            padding: 20px 40px;
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 20px;
+            max-width: 1000px;
             margin: 0 auto;
+        }
+
+        .card {
+            background: white;
             border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            max-width: 600px;
-            position: relative; /* Needed for absolute children */
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.08);
         }
 
-        /* Student name in color */
-        .student-name {
-            color: #3673b9;
-            font-weight: bold;
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        /* Dot & status */
-        #session-info {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 14px;
+        .header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+
+        .header-details {
+            text-align: left;
+        }
+
+        .header-details h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .header-details p {
+            margin: 3px 0;
             color: #666;
         }
 
-        .status-dot {
-            height: 12px;
-            width: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 6px;
-        }
-
-        .status-active {
-            background-color: green;
-        }
-
-        .status-inactive {
-            background-color: red;
-        }
-
-        /* Logout button container (top-left) */
-        #logout-container {
-            position: absolute;
-            top: 10px;
-            left: 15px;
-        }
-
-        /* Logout button styling */
-        #logout-button {
-            background-color: #e74c3c;
-            color: white;
-            font-weight: bold;
-            padding: 8px 14px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #logout-button:hover {
-            background-color: #c0392b;
-        }
-
-        /* General button (blue) */
-        .dashboard-btn {
-            padding: 10px 20px;
+        .btn {
             background-color: #3498db;
-            border: none;
             color: white;
-            font-weight: bold;
+            border: none;
             border-radius: 8px;
+            padding: 10px 20px;
+            margin-top: 10px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
+            font-weight: bold;
+            transition: background-color 0.3s;
         }
 
-        .dashboard-btn:hover {
+        .btn:hover {
             background-color: #2980b9;
         }
 
-        /* To-do list container */
-        #todo-list {
-            list-style-type: none;
-            padding: 0;
+        .tracker-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 10px;
+            margin-top: 5px;
+            overflow: hidden;
         }
 
-        /* To-do list items */
-        #todo-list li {
-            padding: 8px;
-            text-align: left;
-            background: #ecf0f1;
-            margin: 5px auto;
-            max-width: 400px;
-            border-radius: 6px;
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .happy { background-color: #2ecc71; width: 60%; }
+        .stress { background-color: #f1c40f; width: 40%; }
+        .anxiety { background-color: #e67e22; width: 70%; }
+        .selfcare { background-color: #9b59b6; width: 50%; }
+
+        .bottom-actions {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            margin-top: 30px;
+            gap: 15px;
         }
 
-        /* Crossed-out task */
-        #todo-list li.done span {
-            text-decoration: line-through;
-            color: gray;
+        .bottom-actions button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
         }
+
+        .book-btn { background-color: #2980b9; }
+        .mood-btn { background-color: #2ecc71; }
+        .emergency-btn { background-color: #e67e22; }
 
     </style>
 </head>
 <body>
 
-<div class="dashboard-card">
-    <div id="logout-container">
-        <form action="LogoutServlet" method="post">
-            <button type="submit" id="logout-button">Logout</button>
-        </form>
+<div class="grid-container">
+    <!-- Student Profile -->
+    <div class="card">
+        <div class="header">
+            <img src="https://api.dicebear.com/6.x/open-peeps/svg?seed=John" alt="Avatar"> <!-- random profile -->
+            <div class="header-details">
+                <h3><%= studentName + " " + StudentSurname%></h3>
+                <p>Student ID: <%= StudentNumber %></p>
+
+                <p></p>   <!--Can add more detail-->
+            </div>
+        </div>
     </div>
 
-    <!-- Top-right "Active Status" -->
-    <div id="session-info">
-        <p id="activestatus">
-            Active Status:
-            <span id="status-dot" class="status-dot status-active" title="Session Active"></span>
-        </p>
+    <!-- Upcoming Appointments -->
+    <div class="card">
+        <h3>Upcoming Appointments</h3>
+        <p><strong>Dr. Smith</strong> - Counseling</p>
+        <button class="btn">Reschedule</button>
+        <button class="btn" style="background-color: #2c3e50; margin-left: 10px;">Cancel</button>
     </div>
 
-    <!-- Greeting with colored student name -->
-    <h2>Welcome, <span class="student-name"><%= studentName %></span>!</h2>
-    <h3>Activity List:</h3>
-    <input type="text" id="todo-input" placeholder="Enter new task..." style="padding: 8px; width: 70%;">
-    <button onclick="addTodo()" class="dashboard-btn">Add</button>
-    <ul id="todo-list"></ul>
+    <!-- Past Sessions -->
+    <div class="card">
+        <h3>Past Sessions</h3>
+        <p><strong>April 19, 2024</strong><br>Dr. Smith – Academic Support</p>
+        <button class="btn">Submit Anonymous Feedback</button>
+    </div>
 
+    <!-- Wellness Tracker -->
+    <div class="card">
+        <h3>Wellness Tracker</h3>
+        <p>Happy</p>
+        <div class="tracker-bar"><div class="bar-fill happy" id="happyBar"></div></div>
+
+        <p>Stress</p>
+        <div class="tracker-bar"><div class="bar-fill stress" id="stressBar"></div></div>
+
+        <p>Anxiety</p>
+        <div class="tracker-bar"><div class="bar-fill anxiety" id="anxietyBar"></div></div>
+
+        <p>Self-Care</p>
+        <div class="tracker-bar"><div class="bar-fill selfcare" id="selfcareBar"></div></div>
+
+        <button class="btn" id="moodCheckInBtn">Mood Check-In</button>
+        <button class="btn" id="emergencyBtn">Emergency Contacts</button>
+    </div>
+
+    <!-- Book a Session -->
+    <div class="card" style="grid-column: span 2; text-align: center;">
+        <button class="btn" style="font-size: 18px;">Book a Session</button>
+    </div>
 </div>
 
-
-<script>
-    // --- Activity Tracking & Inactive Timer ---
-    let timeout;
-    const statusDot = document.getElementById("status-dot");
-
-    function setInactive() {
-        statusDot.classList.remove("status-active");
-        statusDot.classList.add("status-inactive");
-        statusDot.title = "Inactive (1+ min)";
-    }
-
-    function setActive() {
-        statusDot.classList.remove("status-inactive");
-        statusDot.classList.add("status-active");
-        statusDot.title = "Session Active";
-        resetTimer();
-    }
-
-    function resetTimer() {
-        clearTimeout(timeout);
-        timeout = setTimeout(setInactive, 0.1 * 60 * 1000); // change the first number for minutes 15 = 15min (Currently 6 seconds for demonstration purposes)
-    }
-
-    document.addEventListener("click", setActive);
-    document.addEventListener("keydown", setActive);
-    document.addEventListener("mousemove", setActive);
-    document.addEventListener("scroll", setActive);
-    resetTimer();
-
-
-
-    // --- To-Do List Functionality ---
-    function addTodo() {
-        const input = document.getElementById("todo-input");
-        const taskText = input.value.trim();
-        if (taskText === "") return;
-
-        // Create elements
-        const li = document.createElement("li");
-        const span = document.createElement("span");
-        span.textContent = taskText;
-
-        const toggleBtn = document.createElement("button");
-        toggleBtn.textContent = "Done";
-        toggleBtn.style.marginLeft = "10px";
-        toggleBtn.style.padding = "4px 10px";
-        toggleBtn.style.borderRadius = "6px";
-        toggleBtn.style.border = "none";
-        toggleBtn.style.cursor = "pointer";
-        toggleBtn.style.backgroundColor = "#27ae60";
-        toggleBtn.style.color = "white";
-        toggleBtn.style.fontWeight = "bold";
-
-        toggleBtn.onclick = function () {
-            if (li.classList.contains("done")) {
-                li.classList.remove("done");
-                toggleBtn.textContent = "Done";
-                toggleBtn.style.backgroundColor = "#27ae60";
-            } else {
-                li.classList.add("done");
-                toggleBtn.textContent = "Undo";
-                toggleBtn.style.backgroundColor = "#e67e22";
-            }
-        };
-
-        li.appendChild(span);
-        li.appendChild(toggleBtn);
-        document.getElementById("todo-list").appendChild(li);
-
-        input.value = "";
-    }
-</script>
+<!-- Bottom Buttons -->
+<div class="grid-container" style="grid-template-columns: repeat(3, 1fr); margin-top: 20px;">
+    <button class="book-btn">📅 Book Appointment</button>
+    <button class="mood-btn">😊 Mood Check-In</button>
+    <button class="emergency-btn">⚠ Emergency Help</button>
+</div>
 
 </body>
 </html>
