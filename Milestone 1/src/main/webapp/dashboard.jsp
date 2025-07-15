@@ -1,17 +1,10 @@
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.sql.*, javax.servlet.http.*" session="true" %>
+<jsp:include page="nav.jsp" />
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
     response.setHeader("Pragma", "no-cache"); // HTTP 1.0
     response.setDateHeader("Expires", 0); // Proxies
 %>
-
-<%@ page import="java.sql.*, javax.servlet.http.*" %>
-<%@ page session="false" %>
-
-<%@ page import="javax.servlet.http.*, java.sql.*" %>
-
-<%@ page import="java.sql.*, javax.servlet.http.*" %>
-<%@ page session="false" %>
 
 <%
     // Block browser caching
@@ -34,17 +27,30 @@
     // Validate token
     boolean valid = false;
     String studentName = "Unknown";
+    String StudentNumber = "Unknown";
+    String StudentSurname = "Unknown";
     if (token != null) {
         try {
             Class.forName("org.postgresql.Driver");
             Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wellness", "postgres", "sFicA");
-            PreparedStatement stmt = conn.prepareStatement("SELECT name FROM users WHERE session_token = ?");
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT student_number, name, surname FROM users WHERE session_token = ?");
             stmt.setString(1, token);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 valid = true;
+                StudentNumber = rs.getString("student_number");
                 studentName = rs.getString("name");
+                StudentSurname = rs.getString("surname");
+
+                // Save to session for later use
+                session.setAttribute("StudentNumber", StudentNumber);
+                session.setAttribute("studentName", studentName);
+                session.setAttribute("StudentSurname", StudentSurname);
             }
+
+
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,241 +63,192 @@
     }
 %>
 
-
-<!DOCTYPE html>
 <html>
 <head>
     <title>Student Dashboard</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Page background and font */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7fa;
-            padding: 30px;
-            text-align: center;
+        .tracker-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
         }
 
-        /* Card container */
-        .dashboard-card {
-            background: white;
-            padding: 20px 40px;
-            margin: 0 auto;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            max-width: 600px;
-            position: relative; /* Needed for absolute children */
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
         }
 
-        /* Student name in color */
-        .student-name {
-            color: #3673b9;
-            font-weight: bold;
-        }
+        .happy { background-color: #2ecc71; width: 60%; }
+        .stress { background-color: #f1c40f; width: 40%; }
+        .anxiety { background-color: #e67e22; width: 70%; }
+        .selfcare { background-color: #9b59b6; width: 50%; }
 
-        /* Dot & status */
-        #session-info {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .status-dot {
-            height: 12px;
-            width: 12px;
+        .profile-img {
+            width: 15vw;
+            max-width: 60px;
+            min-width: 40px;
+            height: auto;
             border-radius: 50%;
-            display: inline-block;
-            margin-left: 6px;
+            object-fit: cover;
         }
-
-        .status-active {
-            background-color: green;
-        }
-
-        .status-inactive {
-            background-color: red;
-        }
-
-        /* Logout button container (top-left) */
-        #logout-container {
-            position: absolute;
-            top: 10px;
-            left: 15px;
-        }
-
-        /* Logout button styling */
-        #logout-button {
-            background-color: #e74c3c;
-            color: white;
-            font-weight: bold;
-            padding: 8px 14px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #logout-button:hover {
-            background-color: #c0392b;
-        }
-
-        /* General button (blue) */
-        .dashboard-btn {
-            padding: 10px 20px;
-            background-color: #3498db;
-            border: none;
-            color: white;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .dashboard-btn:hover {
-            background-color: #2980b9;
-        }
-
-        /* To-do list container */
-        #todo-list {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        /* To-do list items */
-        #todo-list li {
-            padding: 8px;
-            text-align: left;
-            background: #ecf0f1;
-            margin: 5px auto;
-            max-width: 400px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Crossed-out task */
-        #todo-list li.done span {
-            text-decoration: line-through;
-            color: gray;
-        }
-
     </style>
 </head>
-<body>
+<body class="bg-light p-4">
 
-<div class="dashboard-card">
-    <div id="logout-container">
-        <form action="LogoutServlet" method="post">
-            <button type="submit" id="logout-button">Logout</button>
-        </form>
+<div class="row g-4">
+    <!-- LEFT SIDE: Profile + Wellness -->
+    <div class="col-md-5 offset-md-1 mt-md-4">
+        <!-- Student Profile -->
+        <div class="card shadow-sm p-5 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <img src="https://api.dicebear.com/6.x/open-peeps/svg?seed=<%= studentName + StudentSurname %>" alt="Avatar" class="profile-img">
+                <div>
+                    <h5 class="mb-1"><%= studentName + " " + StudentSurname %></h5>
+                    <p class="text-muted mb-0">Student ID: <%= StudentNumber %></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wellness Tracker -->
+        <div class="card shadow-sm p-5">
+            <h5>Wellness Tracker</h5>
+            <p class="mb-1">Happy</p>
+            <div class="tracker-bar mb-2"><div class="bar-fill happy"></div></div>
+            <p class="mb-1">Stress</p>
+            <div class="tracker-bar mb-2"><div class="bar-fill stress"></div></div>
+            <p class="mb-1">Anxiety</p>
+            <div class="tracker-bar mb-2"><div class="bar-fill anxiety"></div></div>
+            <p class="mb-1">Self-Care</p>
+            <div class="tracker-bar mb-3"><div class="bar-fill selfcare"></div></div>
+            <div class="d-flex flex-column gap-2">
+                <button class="btn btn-success w-100" id="moodCheckInBtn">Mood Check-In</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Top-right "Active Status" -->
-    <div id="session-info">
-        <p id="activestatus">
-            Active Status:
-            <span id="status-dot" class="status-dot status-active" title="Session Active"></span>
-        </p>
+    <!-- RIGHT SIDE: Appointments + Past + Actions -->
+    <div class="col-md-5">
+        <!-- Upcoming Appointments -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h5>Upcoming Appointment:</h5>
+            <p>Date_of_appointment<br>
+                <strong>Enter_Name_of_appointment</strong> - type_of_appointment</p>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-primary flex-grow-1">Reschedule</button>
+                <button class="btn btn-dark flex-grow-1">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Past Sessions -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h5>Past Sessions</h5>
+            <p><strong>Date_of_appointment</strong><br>Enter_Name_of_appointment%> – type_of_appointment</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card shadow-sm p-4">
+            <h5>Quick Actions</h5>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary">Book Appointment</button>
+                <button class="btn btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#emergencyHelpModal">Emergency Help</button>
+
+            </div>
+        </div>
     </div>
-
-    <!-- Greeting with colored student name -->
-    <h2>Welcome, <span class="student-name"><%= studentName %></span>!</h2>
-    <h3>Activity List:</h3>
-    <input type="text" id="todo-input" placeholder="Enter new task..." style="padding: 8px; width: 70%;">
-    <button onclick="addTodo()" class="dashboard-btn">Add</button>
-    <ul id="todo-list"></ul>
-
 </div>
 
 
+
+<!-- Mood Check-In Modal -->
+<div class="modal fade" id="moodCheckInModal" tabindex="-1" aria-labelledby="moodCheckInModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" action="SaveMoodServlet" method="post">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moodCheckInModalLabel">Mood Check-In</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Happy -->
+                <label for="happySlider" class="form-label">Happy: <span id="happyValue">60</span>%</label>
+                <input type="range" class="form-range" name="happy" id="happySlider" min="0" max="100" value="60">
+
+                <!-- Stress -->
+                <label for="stressSlider" class="form-label mt-3">Stress: <span id="stressValue">40</span>%</label>
+                <input type="range" class="form-range" name="stress" id="stressSlider" min="0" max="100" value="40">
+
+                <!-- Anxiety -->
+                <label for="anxietySlider" class="form-label mt-3">Anxiety: <span id="anxietyValue">70</span>%</label>
+                <input type="range" class="form-range" name="anxiety" id="anxietySlider" min="0" max="100" value="70">
+
+                <!-- Self-Care -->
+                <label for="selfcareSlider" class="form-label mt-3">Self-Care: <span id="selfcareValue">50</span>%</label>
+                <input type="range" class="form-range" name="selfcare" id="selfcareSlider" min="0" max="100" value="50">
+
+                <!-- Hidden field for Student Number -->
+                <input type="hidden" name="studentId" value="<%= StudentNumber %>">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Save Changes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- Emergency Help Modal -->
+<div class="modal fade" id="emergencyHelpModal" tabindex="-1" aria-labelledby="emergencyHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="emergencyHelpModalLabel">Emergency Contacts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Campus Security<span class="fs-6 fw-semibold">012-345-6789</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Mental Health Support<span class="fs-6 fw-semibold">0800-123-456</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // --- Activity Tracking & Inactive Timer ---
-    let timeout;
-    const statusDot = document.getElementById("status-dot");
+    const sliders = [
+        { id: 'happySlider', label: 'happyValue' },
+        { id: 'stressSlider', label: 'stressValue' },
+        { id: 'anxietySlider', label: 'anxietyValue' },
+        { id: 'selfcareSlider', label: 'selfcareValue' }
+    ];
 
-    function setInactive() {
-        statusDot.classList.remove("status-active");
-        statusDot.classList.add("status-inactive");
-        statusDot.title = "Inactive (1+ min)";
-    }
+    sliders.forEach(slider => {
+        const input = document.getElementById(slider.id);
+        const label = document.getElementById(slider.label);
+        input.addEventListener('input', () => {
+            label.textContent = input.value;
+        });
+    });
 
-    function setActive() {
-        statusDot.classList.remove("status-inactive");
-        statusDot.classList.add("status-active");
-        statusDot.title = "Session Active";
-        resetTimer();
-    }
-
-    function resetTimer() {
-        clearTimeout(timeout);
-        timeout = setTimeout(setInactive, 0.1 * 60 * 1000); // change the first number for minutes 15 = 15min (Currently 6 seconds for demonstration purposes)
-    }
-
-    document.addEventListener("click", setActive);
-    document.addEventListener("keydown", setActive);
-    document.addEventListener("mousemove", setActive);
-    document.addEventListener("scroll", setActive);
-    resetTimer();
-
-
-
-    // --- To-Do List Functionality ---
-    function addTodo() {
-        const input = document.getElementById("todo-input");
-        const taskText = input.value.trim();
-        if (taskText === "") return;
-
-        // Create elements
-        const li = document.createElement("li");
-        const span = document.createElement("span");
-        span.textContent = taskText;
-
-        const toggleBtn = document.createElement("button");
-        toggleBtn.textContent = "Done";
-        toggleBtn.style.marginLeft = "10px";
-        toggleBtn.style.padding = "4px 10px";
-        toggleBtn.style.borderRadius = "6px";
-        toggleBtn.style.border = "none";
-        toggleBtn.style.cursor = "pointer";
-        toggleBtn.style.backgroundColor = "#27ae60";
-        toggleBtn.style.color = "white";
-        toggleBtn.style.fontWeight = "bold";
-
-        toggleBtn.onclick = function () {
-            if (li.classList.contains("done")) {
-                li.classList.remove("done");
-                toggleBtn.textContent = "Done";
-                toggleBtn.style.backgroundColor = "#27ae60";
-            } else {
-                li.classList.add("done");
-                toggleBtn.textContent = "Undo";
-                toggleBtn.style.backgroundColor = "#e67e22";
-            }
-        };
-
-        li.appendChild(span);
-        li.appendChild(toggleBtn);
-        document.getElementById("todo-list").appendChild(li);
-
-        input.value = "";
-    }
-
-    if (window.history && window.history.pushState) {
-        window.history.pushState(null, null, window.location.href);
-        window.onpopstate = function () {
-            window.location.replace("login.jsp");
-        };
-    }
-
-    //Forces user to return to login.jsp after exiting dashboard.jsp
-    window.addEventListener("beforeunload", function(){
-        navigator.sendBeacon("LogoutServlet");
-    })
+    document.getElementById('moodCheckInBtn').addEventListener('click', () => {
+        const modal = new bootstrap.Modal(document.getElementById('moodCheckInModal'));
+        modal.show();
+    });
 </script>
+
 
 </body>
 </html>
+
+
 
