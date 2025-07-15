@@ -1,7 +1,14 @@
-class Feedback {
+package com.model;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Feedback {
     private String student;
     private int rating;
-    private ArrayList<String> Comments;
+    private List<String> Comments;
 
     public String getStudent() {
         return this.student;
@@ -19,10 +26,10 @@ class Feedback {
         }
     }
 
-    public ArrayList<String> getComments(){
-        return Comments
+    public String[] getComments(){
+        return Comments.toArray(new String[0]);
     }
-    public void setComments(String comment) {
-        Comments.add(comment);
+    public void setComments(String[] comments) {
+        this.Comments = Arrays.asList(comments);
     }
 }

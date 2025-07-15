@@ -25,7 +25,7 @@ public class Appointment {
         this.counselor = Counselor;
     }
 
-    public Date getDate() {
+    public java.sql.Date getDate() {
         return this.date;
     }
     public void setDate(Date date) {

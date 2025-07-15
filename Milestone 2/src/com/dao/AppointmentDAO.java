@@ -1,3 +1,8 @@
+package com.dao;
+
+import com.model.*;
+import java.util.List;
+
 //Methods to interact with the Appointments Table
 interface AppointmentDAO {
     List<Appointment> getAppointments();
