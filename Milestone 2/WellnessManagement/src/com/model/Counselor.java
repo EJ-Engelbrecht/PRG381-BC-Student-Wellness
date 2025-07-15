@@ -19,6 +19,7 @@ public class Counselor {
         this.specialization = specialization;
     }
 
+
     public boolean isAvailable() {
         return availability;
     }

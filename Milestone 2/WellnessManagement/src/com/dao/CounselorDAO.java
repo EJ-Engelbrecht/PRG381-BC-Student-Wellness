@@ -1,8 +1,7 @@
 package com.dao;
 
-import com.model.Counselor;
-
 import java.util.List;
+import com.model.*;
 
 //Methods to interact with the Counselor Table
 interface CounselorDAO {
