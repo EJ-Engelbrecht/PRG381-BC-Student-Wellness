@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<jsp:include page="nav.jsp" />
 <html>
 <head>
     <title>Register</title>
