@@ -2,6 +2,8 @@
   <library name="javax.servlet-api-4.0.2">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/Milestone 1/javax.servlet-api-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Milestone 2/WellnessManagement/src/com/Resources/derby.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Milestone 2/WellnessManagement/src/com/Resources/derbytools.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
