@@ -25,9 +25,9 @@ public class DashboardFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-    DBInitialization.initialize();
-    javax.swing.SwingUtilities.invokeLater(() -> new DashboardFrame());
-}
+        DBInitialization.initialize();
+        javax.swing.SwingUtilities.invokeLater(() -> new DashboardFrame());
+    }
 
 
 }

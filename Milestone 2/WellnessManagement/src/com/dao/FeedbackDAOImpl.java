@@ -16,7 +16,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     public ArrayList<Feedback> getFeedback() {
-        String sql = "SELECT * FROM Feedback";
+        String sql = "SELECT * FROM feedback";
 
         ArrayList<Feedback> FeedbackList = new ArrayList<Feedback>();
 
@@ -44,7 +44,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     public void registerFeedback(Feedback feedback) {
-        String sql = "INSERT INTO Feedback (student, rating, comments) VALUES(?, ?, ?)";
+        String sql = "INSERT INTO feedback (student, rating, comments) VALUES(?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, feedback.getStudent());
@@ -61,7 +61,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     public void updateFeedback(Feedback feedback) {
-        String sql = "UPDATE Feedback SET rating = ?, comments = ? WHERE student = ?";
+        String sql = "UPDATE feedback SET rating = ?, comments = ? WHERE student = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, feedback.getRating());
@@ -78,7 +78,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     public void deleteFeedback(String student) {
-        String sql = "DELETE FROM Feedback WHERE student = ?";
+        String sql = "DELETE FROM feedback WHERE student = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, student);
