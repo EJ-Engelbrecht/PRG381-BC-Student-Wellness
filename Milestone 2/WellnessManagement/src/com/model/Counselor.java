@@ -20,9 +20,6 @@ public class Counselor {
     }
 
 
-    public void setAvailability(boolean value) {
-        this.availability = value;
-    }
     public boolean isAvailable() {
         return availability;
     }
