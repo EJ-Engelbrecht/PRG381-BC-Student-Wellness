@@ -1,5 +1,5 @@
 package com.dao;
-import com.model.;
+import com.model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,6 +16,7 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         this.conn = conn;
     }
 
+    //retrieves appointment record list from database
     public List<Appointment> getAppointments() {
         String sql = "SELECT * FROM appointments";
 
@@ -25,6 +26,7 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 
             ResultSet result = stmt.executeQuery();
 
+            //adds record details to "Appointment" object which is appended to a appointments object list
             while (result.next()){
                 Appointment ap = new Appointment();
 
@@ -42,17 +44,24 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             e.printStackTrace();
             return null;
         }
-        
+
         return appointments;
     }
 
+    //Insert new "Appointment" record
     public void registerAppointment(Appointment appointment) {
+        //prevents sql injection
         String sql = "INSERT INTO appointments (student, counselor, date, time, status) VALUES(?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, appointment.getStudent());
             stmt.setString(2, appointment.getCounselor());
-            stmt.setDate(3, appointment.getDate());
+
+            //Converts standard date format to sql date format
+            java.util.Date utilDate = appointment.getDate();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+            stmt.setDate(3, sqlDate);
             stmt.setTime(4, appointment.getTime());
 
             stmt.executeUpdate();
@@ -64,12 +73,19 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         }
     }
 
+    //Updates Appointment details based on "Student" Criteria
     public void updateAppointment(Appointment appointment) {
+        //prevents sql injection
         String sql = "UPDATE appointments SET counselor = ?, date = ?, time = ?, status = ? WHERE student = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, appointment.getCounselor());
-            stmt.setDate(2, appointment.getDate());
+
+            //Converts standard date format to sql date format
+            java.util.Date utilDate = appointment.getDate();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+            stmt.setDate(2, sqlDate);
             stmt.setTime(3, appointment.getTime());
             stmt.setString(4, appointment.getStudent());
 
@@ -82,7 +98,10 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         }
     }
 
+
+    //Removes appointments record based on "Student" criteria
     public void deleteAppointment(String student) {
+        //prevents sql injection
         String sql = "DELETE FROM appointments WHERE student = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
