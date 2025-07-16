@@ -16,34 +16,6 @@ public class FeedbackPanel extends javax.swing.JPanel {
     public FeedbackPanel() {
         initComponents();
         
-         // Populate table at startup
-        com.controller.FeedbackController.populateTable(tblFeedback);
-
-        // Submit button
-        btnSubmit.addActionListener(e -> {
-            com.controller.FeedbackController.submitFeedback(txtStudentName, cbRating, jTextArea1);
-            com.controller.FeedbackController.populateTable(tblFeedback);
-            clearForm();
-        });
-
-        // Edit button
-        btnEdit.addActionListener(e -> {
-            com.controller.FeedbackController.editFeedback(tblFeedback, txtStudentName, cbRating, jTextArea1);
-            com.controller.FeedbackController.populateTable(tblFeedback);
-            clearForm();
-        });
-
-        // Delete button
-        btnDelete.addActionListener(e -> {
-            com.controller.FeedbackController.deleteFeedback(tblFeedback);
-            com.controller.FeedbackController.populateTable(tblFeedback);
-            clearForm();
-        });
-
-        // View All button
-        btnViewAll.addActionListener(e -> {
-            com.controller.FeedbackController.populateTable(tblFeedback);
-        });
     }
 
     /**
@@ -181,7 +153,7 @@ public class FeedbackPanel extends javax.swing.JPanel {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSubmit;
     private javax.swing.JButton btnViewAll;
-    private javax.swing.JComboBox<String> cbRating;
+    private javax.swing.JComboBox<Integer> cbRating;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
