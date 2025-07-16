@@ -35,4 +35,11 @@ public class Counselor {
         this.availability = availability;
     }
 
+    public Counselor() {}
+    public Counselor(String name, String specialization, boolean availability) {
+        this.name = name;
+        this.specialization = specialization;
+        this.availability = availability;
+    }
+
 }

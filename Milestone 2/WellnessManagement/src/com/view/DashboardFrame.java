@@ -4,7 +4,6 @@ import javax.swing.*;
 import com.view.AppointmentPanel;
 import com.view.FeedbackPanel;
 import com.view.CounselorPanel;
-import com.util.DBInitialization;
 
 public class DashboardFrame extends JFrame {
 
@@ -25,7 +24,6 @@ public class DashboardFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        DBInitialization.initialize();
         javax.swing.SwingUtilities.invokeLater(() -> new DashboardFrame());
     }
 

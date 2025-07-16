@@ -9,4 +9,5 @@ interface AppointmentDAO {
     void registerAppointment(Appointment appointment);
     void updateAppointment(Appointment appointment);
     void deleteAppointment(String student);
+    boolean hasConflict(String counselor, Date date, Time time);
 }
