@@ -85,13 +85,13 @@ public class CounselorDAOImpl implements CounselorDAO {
         }
     }
 
-    //removes record based on "name" criteria
-    public void deleteCounselor(String name) {
+    //removes record based on "id" criteria
+    public void deleteCounselor(int id) {
         //prevents sql injection
-        String sql = "DELETE FROM counselors WHERE name = ?";
+        String sql = "DELETE FROM counselors WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, name);
+            stmt.setInt(1, id);
 
             stmt.executeUpdate();
 

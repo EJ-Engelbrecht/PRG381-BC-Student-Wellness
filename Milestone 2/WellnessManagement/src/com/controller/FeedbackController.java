@@ -35,7 +35,12 @@ public class FeedbackController {
                 return;
             }
 
-            Feedback fb = new Feedback(student, rating, comments);
+            Feedback fb = new Feedback();
+            
+            fb.setStudent(student);
+            fb.setRating(rating);
+            fb.setComments(comments);
+            
             feedbackDAOImpl.registerFeedback(fb);
             JOptionPane.showMessageDialog(null, "Feedback submitted!");
         } catch (Exception e) {
@@ -70,8 +75,9 @@ public class FeedbackController {
 
         try {
             int feedbackId = (int) table.getValueAt(selectedRow, 0);
-            boolean success = feedbackDAOImpl.deleteFeedback(feedbackId);
-
+            feedbackDAOImpl.deleteFeedback(feedbackId);
+            
+            boolean success = true;
             if (success) {
                 JOptionPane.showMessageDialog(null, "Feedback deleted successfully.");
                 ((DefaultTableModel) table.getModel()).removeRow(selectedRow);
@@ -86,7 +92,11 @@ public class FeedbackController {
     public void editFeedback(int id, String student, int rating, String comments) {
         try {
             Feedback updated = new Feedback(id, student, rating, comments);
-            boolean success = feedbackDAOImpl.updateFeedback(updated);
+            feedbackDAOImpl.updateFeedback(updated);
+            
+            boolean success = true;
+            
+         
             if (success) {
                 JOptionPane.showMessageDialog(null, "Feedback updated successfully.");
             } else {

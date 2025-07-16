@@ -23,14 +23,17 @@ public class CounselorController {
     }
 
     public boolean addCounselor(Counselor counselor) {
-        return counselorDAO.insertCounselor(counselor);
+        counselorDAO.registerCounselor(counselor);
+        return true;
     }
 
     public boolean deleteCounselor(int id) {
-        return counselorDAO.deleteCounselor(id);
+        counselorDAO.deleteCounselor(id);
+        
+        return false;
     }
 
     public List<Counselor> getAllCounselors() {
-        return counselorDAO.getAllCounselors();
+        return counselorDAO.getCounselors();
     }
 }

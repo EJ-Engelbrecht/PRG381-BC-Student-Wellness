@@ -28,12 +28,13 @@ public class AppointmentController {
             JOptionPane.showMessageDialog(null, "This time slot is already booked for the counselor.");
             return false;
         }
-
-        return appointmentDAOImpl.registerAppointment(a);
+        appointmentDAOImpl.registerAppointment(a);
+        return true;
     }
 
-    public boolean cancelAppointment(int appointmentId) {
-        return appointmentDAOImpl.cancelAppointment(appointmentId);
+    public boolean cancelAppointment(int id) {
+        appointmentDAOImpl.deleteAppointment(id);
+        return true;
     }
 
     public List<Appointment> getAppointmentsByStudent(String studentName) {
@@ -41,6 +42,6 @@ public class AppointmentController {
     }
 
     public List<Appointment> getAllAppointments() {
-        return appointmentDAOImpl.getAllAppointments();
+        return appointmentDAOImpl.getAppointments();
     }
 }

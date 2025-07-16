@@ -2,15 +2,23 @@ package com.model;
 
 import java.sql.Time;
 import java.util.Date;
+import java.time.LocalTime;
 
 public class Appointment {
+    private int id;
     private String student;
     private String counselor;
     private Date date;
     private Time time;
     private String status;
 
-
+    public int getId(){
+        return this.id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     public String getStudent(){
         return this.student;
     }
@@ -47,7 +55,8 @@ public class Appointment {
     }
 
     public Appointment(){}
-    public Appointment(String student, String counselor, java.util.Date date, Time time, String Status) {
+    public Appointment(int id,String student, String counselor, java.util.Date date, Time time, String Status) {
+        this.id = id;
         this.student = student;
         this.counselor = counselor;
         this.date = date;
