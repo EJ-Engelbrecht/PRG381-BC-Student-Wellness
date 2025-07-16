@@ -127,8 +127,6 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 
             ResultSet result = stmt.executeQuery();
 
-            ResultSet rs = stmt.executeQuery(query));
-
             int count;
 
             if (rs.next()) {
