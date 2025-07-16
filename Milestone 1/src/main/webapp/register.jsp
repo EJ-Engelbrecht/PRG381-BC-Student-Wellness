@@ -181,6 +181,7 @@
 
     <!-- Step 1 -->
     <form id="step1" onsubmit="return validateStep1();">
+        <button type="button" class="back-arrow" onclick="history.back()" title="Back"></button>
         Student Number: <input type="text" name="student_number" id="student_number" required><br>
         Name: <input type="text" name="name" id="name" required><br>
         Surname: <input type="text" name="surname" id="surname" required><br>
@@ -273,7 +274,7 @@
     <div id="successModal" class="modal">
         <div class="modal-content">
 
-            <h3 style="color: green;"><%= successMessage != null ? successMessage : "" %></h3>
+            <h3 style="color: white;"><%= successMessage != null ? successMessage : "" %></h3>
             <a href="login.jsp"><button class="login-btn">Go to Login</button></a>
         </div>
     </div>
