@@ -1,10 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<head>
-    <title>Login</title>
-    <link rel="stylesheet" href="./css/styles.css">
-    <script>
-        function validateLogin() {
+function validateLogin() {
             let valid = true;
 
             const email = document.getElementById("email");
@@ -20,9 +14,10 @@
             passwordMsg.innerHTML = "";
 
             const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-            // Email validation
+
+    // Email validation
             if (email.value.trim().length === 0) {
                 email.classList.add("invalid");
                 emailMsg.innerHTML += "<p>Please fill in a Email address.</p>";
@@ -30,9 +25,9 @@
             } else {
                 //Email complexity validation
                 if (!emailRegex.test(email.value)) {
-                    email.classList.add("invalid");
-                    emailMsg.innerHTML += "<p>Not a real Email address.</p>";
-                    valid = false;
+                  email.classList.add("invalid");
+                  emailMsg.innerHTML += "<p>Not a real Email address.</p>";
+                 valid = false;
                 }
             }
 
@@ -45,7 +40,7 @@
                 // Password complexity validation
                 if (!passwordRegex.test(password.value)) {
                     password.classList.add("invalid");
-                    passwordMsg.innerHTML += "<p>Password must contain at least 1 lowercase, 1 uppercase, 1 digit, and be at least 8 characters.</p>";
+                    passwordMsg.innerHTML += "<p>Password must contain at least 1 uppercase, 1 digit, and be at least 8 characters.</p>";
                     valid = false;
                 }
 
@@ -74,37 +69,3 @@
                 icon.src = "./images/eye-closed.png"; // Change to closed eye image
             }
         }
-
-
-    </script>
-</head>
-<body>
-<div class="displaycards">
-    <h2>Student Login</h2>
-    <form action="LoginServlet" method="post" onsubmit="return validateLogin();">
-        Email: <input type="email" id="email" name="email" placeholder="Email"><br>
-        <div id="email-error" class="error-message"></div>
-
-        Password:
-        <div class="password-wrapper">
-            <input type="password" id="password" name="password" placeholder="Password">
-            <img class="Pimage" src="./images/eye-closed.png" id="visImage" onclick="togglePassword()" alt="Show Password" title="Show Password">
-        </div>
-        <div id="password-error" class="error-message"></div>
-
-
-        <input type="submit" value="Login">
-    </form>
-
-    <%
-        String error = request.getParameter("error");
-        if (error != null) {
-            out.println("<p style='color:red; margin-top:10px;'>" + error + "</p>");
-        }
-    %>
-
-
-</div>
-</body>
-</html>
-
