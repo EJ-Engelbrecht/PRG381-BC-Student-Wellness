@@ -32,5 +32,16 @@
         <url-pattern>/LogoutServlet</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ResetPasswordServlet</servlet-name>
+        <servlet-class>main.bc.servlet.ResetPasswordServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ResetPasswordServlet</servlet-name>
+        <url-pattern>/ResetPasswordServlet</url-pattern>
+    </servlet-mapping>
+
+
 </web-app>
 

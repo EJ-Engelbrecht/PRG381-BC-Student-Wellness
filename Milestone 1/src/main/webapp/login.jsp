@@ -12,7 +12,7 @@
             const emailMsg = document.getElementById("email-error");
             const passwordMsg = document.getElementById("password-error");
 
-            // ✅ Clear old errors
+            // Clear old errors
             email.classList.remove("invalid");
             password.classList.remove("invalid");
             emailMsg.innerHTML = "";
@@ -20,7 +20,7 @@
 
             const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-            // ✅ Step 1: Client-side email format validation
+            // Step 1: Client-side email format validation
             if (email.value.trim().length === 0) {
                 email.classList.add("invalid");
                 emailMsg.innerHTML = "<p>Please fill in an Email address.</p>";
@@ -33,7 +33,7 @@
                 return false;
             }
 
-            // ✅ Let the server validate the email existence and password
+            // Let the server validate the email existence and password
             return true;
         }
 
@@ -59,6 +59,8 @@
 </head>
 <body>
 <div class="displaycards">
+    <button type="button" class="back-arrow" onclick="history.back()" title="Back"></button>
+
     <h2>Student Login</h2>
     <form action="LoginServlet" method="post" onsubmit="return validateLogin();">
         Email: <input type="email" id="email" name="email" placeholder="Email"><br>
@@ -74,6 +76,9 @@
 
         <input type="submit" value="Login">
     </form>
+    <div style="margin-top: 10px; text-align: center;">
+        <a href="reset_password.jsp" style="color: #0d6efd; text-decoration: underline;">Forgot your password?</a>
+    </div>
 
     <%
         String errorMessage = (String) request.getAttribute("errorMessage");

@@ -141,9 +141,75 @@
         .goal-item button {
             margin-left: 0.5rem;
         }
+        .options-toggle {
+            border-radius: 5px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: none;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .options-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .options-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            margin-top: 10px;
+            min-width: 20%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            z-index: 1001;
+            animation: fadeIn 0.2s ease forwards;
+        }
+
+        .list-group-item {
+            border-radius: 0 !important;
+            background-color: transparent;
+            border: none;
+            padding: 10px 15px;
+        }
+
+        .dropdown-link {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+        }
+
+        .dropdown-link:hover {
+            color: #1e90ff;
+            text-decoration: underline;
+            transition: 0.1s;
+        }
     </style>
 </head>
 <body class="bg-light p-4 dashboard">
+<!-- Options Button -->
+<div style="position: absolute; top: 15px; right: 8px; z-index: 1000;">
+    <button class="btn btn-light options-toggle" onclick="toggleOptions()">☰</button>
+    <div id="optionsDropdown" class="card shadow" style="display:none; position: absolute; right: 0; min-width: 180px;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-transparent border-0 p-2">
+                <a href="reset_password.jsp" class="dropdown-link">Change Password</a>
+            </li>
+            <li class="list-group-item bg-transparent border-0 p-2">
+                <a href="LogoutServlet" class="dropdown-link">Logout</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
 <div class="text-center mb-4">
     <h2 class="fw-bold text-dark" style="margin-bottom: 4%; margin-top: 2%;">Student Wellness Dashboard</h2>
 </div>
@@ -356,6 +422,21 @@
         window.addEventListener("beforeunload", function () {
         navigator.sendBeacon("LogoutServlet");
     });
+    function toggleOptions() {
+        const dropdown = document.getElementById("optionsDropdown");
+        dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+    }
+
+    // Optional: Hide dropdown when clicking outside
+    document.addEventListener('click', function (event) {
+        const optionsMenu = document.getElementById("optionsDropdown");
+        const toggleBtn = document.querySelector(".options-toggle");
+
+        if (!optionsMenu.contains(event.target) && !toggleBtn.contains(event.target)) {
+            optionsMenu.style.display = "none";
+        }
+    });
+
 </script>
 </body>
 </html>
