@@ -20,6 +20,7 @@ public class FeedbackController {
             Connection conn = getConnection();
             this.feedbackDAOImpl = new FeedbackDAOImpl(conn);
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Database connection failed.");
             throw new RuntimeException("Database connection failed: " + e.getMessage());
         }
     }
@@ -44,7 +45,8 @@ public class FeedbackController {
             feedbackDAOImpl.registerFeedback(fb);
             JOptionPane.showMessageDialog(null, "Feedback submitted!");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error submitting feedback: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error submitting feedback: \n" + e.getMessage());
         }
     }
 
@@ -59,7 +61,8 @@ public class FeedbackController {
 
             table.setModel(model);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error loading feedback: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error loading feedback: \n" + e.getMessage());
         }
     }
 

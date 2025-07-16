@@ -6,7 +6,7 @@ import java.util.Date;
 import java.sql.Time;
 
 //Methods to interact with the Appointments Table
-interface AppointmentDAO {
+public interface AppointmentDAO {
     List<Appointment> getAppointments();
     void registerAppointment(Appointment appointment);
     void updateAppointment(Appointment appointment);

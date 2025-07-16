@@ -4,6 +4,13 @@
  */
 package com.view;
 
+import com.dao.AppointmentDAO;
+import com.dao.AppointmentDAOImpl;
+import com.dao.DBConnection;
+import com.model.Appointment;
+import java.sql.Connection;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author chesa
@@ -36,6 +43,7 @@ public class AppointmentPanel extends javax.swing.JPanel {
         cbCounselor = new javax.swing.JComboBox<>();
         cbTime = new javax.swing.JComboBox<>();
         cbStatus = new javax.swing.JComboBox<>();
+        btnSave = new javax.swing.JButton();
 
         lblStudentName.setText("Student Name:");
 
@@ -47,9 +55,18 @@ public class AppointmentPanel extends javax.swing.JPanel {
 
         lblStatus.setText("Status:");
 
+        cbCounselor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Test" }));
+
         cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "08:00 ", "09:00 ", "10:00 ", "11:00 ", "12:00", "13:00", "14:00", "15:00", "16:00" }));
 
         cbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Scheduled", "Completed", "Cancelled" }));
+
+        btnSave.setText("Save Appointment");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -71,6 +88,10 @@ public class AppointmentPanel extends javax.swing.JPanel {
                     .addComponent(cbTime, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cbStatus, 0, 210, Short.MAX_VALUE))
                 .addGap(14, 14, 14))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(256, 256, 256)
+                .addComponent(btnSave)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -95,12 +116,51 @@ public class AppointmentPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblStatus)
                     .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(68, Short.MAX_VALUE))
+                .addGap(19, 19, 19)
+                .addComponent(btnSave)
+                .addContainerGap(26, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        try {
+            String student = tfStudentName.getText().trim();
+            String counselor = cbCounselor.getSelectedItem().toString();
+            String status = cbStatus.getSelectedItem().toString();
+            String dateStr = tfDate.getText().trim(); // format: YYYY-MM-DD
+            String timeStr = cbTime.getSelectedItem().toString().trim() + ":00";
+
+            java.sql.Date date = java.sql.Date.valueOf(dateStr);
+            java.sql.Time time = java.sql.Time.valueOf(timeStr);
+
+            Appointment appointment = new Appointment();
+            appointment.setStudent(student);
+            appointment.setCounselor(counselor);
+            appointment.setDate(date);
+            appointment.setTime(time);
+            appointment.setStatus(status);
+
+            // use registerAppointment instead of addAppointment
+            Connection conn = DBConnection.getConnection();
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "❌ Failed to connect to the database.");
+                return;
+            }
+            AppointmentDAO dao = new AppointmentDAOImpl(conn);
+            dao.registerAppointment(appointment);
+
+            JOptionPane.showMessageDialog(this, "✅ Appointment added successfully.");
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "⚠️ Failed to save appointment.\nSee console for details.");
+            ex.printStackTrace();  // ✅ this is the real source of truth
+        }
+
+    }//GEN-LAST:event_btnSaveActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSave;
     private javax.swing.JComboBox<String> cbCounselor;
     private javax.swing.JComboBox<String> cbStatus;
     private javax.swing.JComboBox<String> cbTime;

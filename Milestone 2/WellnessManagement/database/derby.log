@@ -1,0 +1,20 @@
+Wed Jul 16 22:15:01 SAST 2025 : Apache Derby Network Server - 10.17.1.0 - (1913217) started and ready to accept connections on port 1527
+----------------------------------------------------------------
+Wed Jul 16 22:15:03 SAST 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-0198-14e0-4db9-ffffd3b1cf89 
+on database directory C:\PRG381\PROJECT\PRG381-BC-Student-Wellness\Milestone 2\WellnessManagement\database\wellness with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
+Loaded from file:/C:/Program%20Files/derby/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=21.0.7+8-LTS-245
+user.dir=C:\Program Files\derby
+os.name=Windows 11
+os.arch=amd64
+os.version=10.0
+derby.system.home=C:\PRG381\PROJECT\PRG381-BC-Student-Wellness\Milestone 2\WellnessManagement\database
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Wed Jul 16 22:19:17 SAST 2025: Shutting down Derby engine
+----------------------------------------------------------------
+Wed Jul 16 22:19:17 SAST 2025:
+Shutting down instance a816c00e-0198-14e0-4db9-ffffd3b1cf89 on database directory C:\PRG381\PROJECT\PRG381-BC-Student-Wellness\Milestone 2\WellnessManagement\database\wellness with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
+----------------------------------------------------------------
