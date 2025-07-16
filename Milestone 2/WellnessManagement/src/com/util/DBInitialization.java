@@ -7,6 +7,7 @@ public class DBInitialization {
 
     private static boolean initialized = false;
 
+    //Attempts to connect with the database, and create the relevant tables if they do not exist yet
     public static synchronized void initialize() {
         if (initialized) return;
 

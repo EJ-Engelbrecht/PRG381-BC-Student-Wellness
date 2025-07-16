@@ -15,6 +15,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
         this.conn = conn;
     }
 
+    //retrieves records from Feedback table
     public ArrayList<Feedback> getFeedback() {
         String sql = "SELECT * FROM feedback";
 
@@ -24,12 +25,17 @@ class FeedbackDAOImpl implements FeedbackDAO {
 
             ResultSet result = stmt.executeQuery();
 
+            //adds record details to feedback object which is then appended to a details object ArrayList
             while (result.next()){
                 Feedback fb = new Feedback();
 
                 fb.setStudent(result.getString("student"));
                 fb.setRating(result.getInt("rating"));
-                fb.setComments(result.getArray("comments"));
+
+                //Converts sql Array format to standard Array format
+                java.sql.Array sqlArray = result.getArray("comments");
+                String[] comments = (String[]) sqlArray.getArray();
+                fb.setComments(comments);
 
                 FeedbackList.add(fb);
             }
@@ -43,13 +49,18 @@ class FeedbackDAOImpl implements FeedbackDAO {
         return FeedbackList;
     }
 
+    //adds new record to feedback table
     public void registerFeedback(Feedback feedback) {
+        //prevents sql injection
         String sql = "INSERT INTO feedback (student, rating, comments) VALUES(?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, feedback.getStudent());
             stmt.setInt(2, feedback.getRating());
-            stmt.setArray(3, feedback.getComments());
+
+            //converts standard array format to sql array format
+            java.sql.Array sqlArray = conn.createArrayOf("VARCHAR", feedback.getComments);
+            stmt.setArray(3, sqlArray);
 
             stmt.executeUpdate();
 
@@ -60,12 +71,18 @@ class FeedbackDAOImpl implements FeedbackDAO {
         }
     }
 
+    //Updates record based on "student" criteria
     public void updateFeedback(Feedback feedback) {
+        //prevents sql injection
         String sql = "UPDATE feedback SET rating = ?, comments = ? WHERE student = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, feedback.getRating());
-            stmt.setArray(2, feedback.getComments());
+
+            //converts standard array format to sql array format
+            java.sql.Array sqlArray = conn.createArrayOf("VARCHAR", feedback.getComments);
+            stmt.setArray(2, sqlArray);
+
             stmt.setString(3, feedback.getStudent());
 
             stmt.executeUpdate();
@@ -77,7 +94,9 @@ class FeedbackDAOImpl implements FeedbackDAO {
         }
     }
 
+    //removes record based on student criteria
     public void deleteFeedback(String student) {
+        //prevents sql injection
         String sql = "DELETE FROM feedback WHERE student = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -16,6 +16,7 @@ public class CounselorDAOImpl implements CounselorDAO {
         this.conn = conn;
     }
 
+    //retrieves records from the "counselors" table
     public List<Counselor> getCounselors() {
         String sql = "SELECT * FROM counselors";
 
@@ -25,6 +26,7 @@ public class CounselorDAOImpl implements CounselorDAO {
 
             ResultSet result = stmt.executeQuery();
 
+            //creates, with each record, a counselor object with record details added
             while (result.next()){
                 Counselor cs = new Counselor();
 
@@ -32,6 +34,7 @@ public class CounselorDAOImpl implements CounselorDAO {
                 cs.setSpecialization(result.getString("specialization"));
                 cs.setAvailability(result.getBoolean("availability"));
 
+                //appends to List
                 Counselors.add(cs);
             }
 
@@ -44,7 +47,9 @@ public class CounselorDAOImpl implements CounselorDAO {
         return Counselors;
     }
 
+    //adds new record to counselor table
     public void registerCounselor(Counselor counselor) {
+        //prevents sql injection
         String sql = "INSERT INTO counselors (name, specialization, availability) VALUES(?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -61,7 +66,9 @@ public class CounselorDAOImpl implements CounselorDAO {
         }
     }
 
+    //updates record based on "name" criteria
     public void updateCounselor(Counselor counselor) {
+        //prevents sql injection
         String sql = "UPDATE counselors SET specialization = ?, availability = ? WHERE name = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -78,7 +85,9 @@ public class CounselorDAOImpl implements CounselorDAO {
         }
     }
 
+    //removes record based on "name" criteria
     public void deleteCounselor(String name) {
+        //prevents sql injection
         String sql = "DELETE FROM counselors WHERE name = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
