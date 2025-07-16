@@ -1,5 +1,5 @@
-Wed Jul 16 21:38:11 SAST 2025 Thread[#1,main,5,main] Cleanup action starting
-java.sql.SQLException: Failed to start database 'database/wellness' with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e, see the next exception for details.
+Wed Jul 16 22:17:30 SAST 2025 Thread[#1,main,5,main] Cleanup action starting
+java.sql.SQLException: Failed to start database 'C:/PRG381/PROJECT/PRG381-BC-Student-Wellness/Milestone 2/WellnessManagement/database/wellness' with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e, see the next exception for details.
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(SQLExceptionFactory.java:115)
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(SQLExceptionFactory.java:141)
 	at org.apache.derby.impl.jdbc.Util.seeNextException(Util.java:252)
@@ -11,9 +11,9 @@ java.sql.SQLException: Failed to start database 'database/wellness' with class l
 	at org.apache.derby.iapi.jdbc.AutoloadedDriver.connect(AutoloadedDriver.java:132)
 	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
 	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:253)
-	at com.dao.DBConnection.getConnection(DBConnection.java:32)
-	at com.view.DashboardFrame.main(DashboardFrame.java:32)
-Caused by: ERROR XJ040: Failed to start database 'database/wellness' with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e, see the next exception for details.
+	at com.dao.DBConnection.getConnection(DBConnection.java:34)
+	at com.view.DashboardFrame.main(DashboardFrame.java:34)
+Caused by: ERROR XJ040: Failed to start database 'C:/PRG381/PROJECT/PRG381-BC-Student-Wellness/Milestone 2/WellnessManagement/database/wellness' with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e, see the next exception for details.
 	at org.apache.derby.shared.common.error.StandardException.newException(StandardException.java:299)
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.wrapArgsForTransportAcrossDRDA(SQLExceptionFactory.java:170)
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(SQLExceptionFactory.java:75)
@@ -51,7 +51,7 @@ Caused by: ERROR XSDB6: Another instance of Derby may have already booted the da
 	at org.apache.derby.impl.services.monitor.TopService.bootModule(TopService.java:334)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.bootService(BaseMonitor.java:1818)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.startProviderService(BaseMonitor.java:1683)
-	at org.apache.derby.impl.services.monitor.BaseMonitor.findProviderAndStartService(BaseMonitor.java:1567)
+	at org.apache.derby.impl.services.monitor.BaseMonitor.findProviderAndStartService(BaseMonitor.java:1516)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.startPersistentService(BaseMonitor.java:988)
 	at org.apache.derby.iapi.services.monitor.Monitor.startPersistentService(Monitor.java:598)
 	at org.apache.derby.impl.jdbc.EmbedConnection.startPersistentService(EmbedConnection.java:3994)
@@ -69,8 +69,8 @@ java.sql.SQLException: Another instance of Derby may have already booted the dat
 	at org.apache.derby.iapi.jdbc.AutoloadedDriver.connect(AutoloadedDriver.java:132)
 	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
 	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:253)
-	at com.dao.DBConnection.getConnection(DBConnection.java:32)
-	at com.view.DashboardFrame.main(DashboardFrame.java:32)
+	at com.dao.DBConnection.getConnection(DBConnection.java:34)
+	at com.view.DashboardFrame.main(DashboardFrame.java:34)
 Caused by: ERROR XSDB6: Another instance of Derby may have already booted the database C:\PRG381\PROJECT\PRG381-BC-Student-Wellness\Milestone 2\WellnessManagement\database\wellness.
 	at org.apache.derby.shared.common.error.StandardException.newException(StandardException.java:299)
 	at org.apache.derby.shared.common.error.StandardException.newException(StandardException.java:294)
@@ -104,7 +104,7 @@ Caused by: ERROR XSDB6: Another instance of Derby may have already booted the da
 	at org.apache.derby.impl.services.monitor.TopService.bootModule(TopService.java:334)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.bootService(BaseMonitor.java:1818)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.startProviderService(BaseMonitor.java:1683)
-	at org.apache.derby.impl.services.monitor.BaseMonitor.findProviderAndStartService(BaseMonitor.java:1567)
+	at org.apache.derby.impl.services.monitor.BaseMonitor.findProviderAndStartService(BaseMonitor.java:1516)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.startPersistentService(BaseMonitor.java:988)
 	at org.apache.derby.iapi.services.monitor.Monitor.startPersistentService(Monitor.java:598)
 	at org.apache.derby.impl.jdbc.EmbedConnection.startPersistentService(EmbedConnection.java:3994)
@@ -145,7 +145,7 @@ ERROR XSDB6: Another instance of Derby may have already booted the database C:\P
 	at org.apache.derby.impl.services.monitor.TopService.bootModule(TopService.java:334)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.bootService(BaseMonitor.java:1818)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.startProviderService(BaseMonitor.java:1683)
-	at org.apache.derby.impl.services.monitor.BaseMonitor.findProviderAndStartService(BaseMonitor.java:1567)
+	at org.apache.derby.impl.services.monitor.BaseMonitor.findProviderAndStartService(BaseMonitor.java:1516)
 	at org.apache.derby.impl.services.monitor.BaseMonitor.startPersistentService(BaseMonitor.java:988)
 	at org.apache.derby.iapi.services.monitor.Monitor.startPersistentService(Monitor.java:598)
 	at org.apache.derby.impl.jdbc.EmbedConnection.startPersistentService(EmbedConnection.java:3994)
@@ -157,7 +157,10 @@ ERROR XSDB6: Another instance of Derby may have already booted the database C:\P
 	at org.apache.derby.iapi.jdbc.AutoloadedDriver.connect(AutoloadedDriver.java:132)
 	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
 	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:253)
-	at com.dao.DBConnection.getConnection(DBConnection.java:32)
-	at com.view.DashboardFrame.main(DashboardFrame.java:32)
+	at com.dao.DBConnection.getConnection(DBConnection.java:34)
+	at com.view.DashboardFrame.main(DashboardFrame.java:34)
 ============= end nested exception, level (2) ===========
 Cleanup action completed
+----------------------------------------------------------------
+Wed Jul 16 22:17:30 SAST 2025: Shutting down Derby engine
+----------------------------------------------------------------
