@@ -10,7 +10,6 @@ import javax.servlet.http.*;
 
 public class LoginServlet extends HttpServlet {
 
-
     @Override
     public void init() throws ServletException {
         super.init();
@@ -30,43 +29,70 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         try (Connection conn = getConnection()) {
-            String sql = "SELECT name, password FROM users WHERE email = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
+            // Step 1: Check if email exists
+            String emailCheckSql = "SELECT name, password FROM users WHERE email = ?";
+            PreparedStatement emailCheckStmt = conn.prepareStatement(emailCheckSql);
+            emailCheckStmt.setString(1, email);
+            ResultSet rs = emailCheckStmt.executeQuery();
 
-            if (rs.next()) {
-                String storedHash = rs.getString("password");
-                String name = rs.getString("name");
-
-                if (storedHash.equals(hashPassword(password))) {
-                    // ✅ Generate new token on each login
-                    String token = generateToken();
-
-                    // ✅ Store the token in session_token column
-                    PreparedStatement tokenStmt = conn.prepareStatement(
-                            "UPDATE users SET session_token = ? WHERE email = ?");
-                    tokenStmt.setString(1, token);
-                    tokenStmt.setString(2, email);
-                    tokenStmt.executeUpdate();
-
-                    // ✅ Send token as secure cookie
-                    Cookie authCookie = new Cookie("session_token", token);
-                    authCookie.setHttpOnly(true);
-                    authCookie.setPath("/"); // applies to the whole app
-                    authCookie.setMaxAge(60 * 60); // 1 hour
-                    response.addCookie(authCookie);
-
-                    // ✅ Optional session attribute for name
-                    request.getSession().setAttribute("studentName", name);
-
-                    response.sendRedirect("dashboard.jsp");
-                    return;
-                }
+            if (!rs.next()) {
+                request.setAttribute("errorMessage", "Email not found.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
             }
 
-            request.setAttribute("errorMessage", "Invalid email or password.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            // Email exists, check password
+            String storedHash = rs.getString("password");
+            String name = rs.getString("name");
+            // ✅ Password validations
+            if (password.length() < 8 ||
+                    !password.matches(".*[A-Z].*") ||
+                    !password.matches(".*\\d.*") ||
+                    password.contains(".")) {
+
+                StringBuilder error = new StringBuilder();
+                error.append("Password requirements not met:<ul>");
+                if (password.length() < 8) error.append("<li>At least 8 characters</li>");
+                if (!password.matches(".*[A-Z].*")) error.append("<li>At least 1 uppercase letter</li>");
+                if (!password.matches(".*\\d.*")) error.append("<li>At least 1 digit</li>");
+                if (password.contains(".")) error.append("<li>Password cannot contain a dot (.)</li>");
+                error.append("</ul>");
+
+                request.setAttribute("errorMessage", error.toString());
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
+            }
+
+            if (!storedHash.equals(hashPassword(password))) {
+                // Password incorrect
+                request.setAttribute("errorMessage", "Incorrect password.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
+            }
+
+            // Password correct — proceed with login
+
+            // Generate new token on each login
+            String token = generateToken();
+
+            // Store the token in session_token column
+            PreparedStatement tokenStmt = conn.prepareStatement(
+                    "UPDATE users SET session_token = ? WHERE email = ?");
+            tokenStmt.setString(1, token);
+            tokenStmt.setString(2, email);
+            tokenStmt.executeUpdate();
+
+            // Send token as secure cookie
+            Cookie authCookie = new Cookie("session_token", token);
+            authCookie.setHttpOnly(true);
+            authCookie.setPath("/"); // applies to the whole app
+            authCookie.setMaxAge(60 * 60); // 1 hour
+            response.addCookie(authCookie);
+
+            // Optional session attribute for name
+            request.getSession().setAttribute("studentName", name);
+
+            response.sendRedirect("dashboard.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();

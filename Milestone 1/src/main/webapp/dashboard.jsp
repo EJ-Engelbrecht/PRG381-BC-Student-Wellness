@@ -190,7 +190,6 @@
             <div class="card shadow-sm p-4">
                 <h5>Quick Actions</h5>
                 <div class="d-grid gap-2">
-                    <button class="btn btn-primary">Book Appointment</button>
                     <button class="btn btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#emergencyHelpModal">Emergency Help</button>
                 </div>
             </div>

@@ -4,6 +4,65 @@
 <head>
     <title>Register</title>
     <link rel="stylesheet" href="./css/styles.css">
+    <style>
+        /* Modal overlay (same) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.55);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Modal content styled like displaycards */
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin: auto;
+            padding: 30px 40px;
+            border: none;
+            width: 40%;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        /* Success message heading */
+        .modal-content h3 {
+            color: #2ecc71;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+        }
+
+        /* Login button matching other buttons */
+        .login-btn {
+            background: linear-gradient(135deg, #1e90ff, #3498db);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1c5980);
+            box-shadow: 0 8px 20px rgba(41, 128, 185, 0.6);
+            transform: translateY(-2px);
+        }
+
+    </style>
+
     <script>
         function showPasswordStep() {
             document.getElementById("step1").style.display = "none";
@@ -50,6 +109,10 @@
 
             if (valid) {
                 // 🟢 This is what was missing — you need to copy data into the hidden fields before showing step 2
+
+                const serverError = document.getElementById("server-error-msg");
+                if (serverError) serverError.style.display = "none";
+
                 document.getElementById("hidden_student_number").value = document.getElementById("student_number").value;
                 document.getElementById("hidden_name").value = document.getElementById("name").value;
                 document.getElementById("hidden_surname").value = document.getElementById("surname").value;
@@ -58,6 +121,7 @@
 
                 showPasswordStep();
             }
+
 
             return false; // prevent Step 1 form from submitting
         }
@@ -113,6 +177,7 @@
 <body>
 <div class="displaycards">
     <h2>Student Registration</h2>
+
 
     <!-- Step 1 -->
     <form id="step1" onsubmit="return validateStep1();">
@@ -186,6 +251,34 @@
 
         <input type="submit" value="Register">
     </form>
+    <%
+        String errorMessage = (String) request.getAttribute("errorMessage");
+        String successMessage = (String) request.getAttribute("successMessage");
+    %>
+
+    <% if (errorMessage != null) { %>
+    <div id="server-error-msg" style="color: red; font-weight: bold; margin-top: 10px;"><%= errorMessage %></div>
+    <% } %>
+
+    <% if (successMessage != null) { %>
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("successModal").style.display = "block";
+        });
+    </script>
+    <% } %>
+
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+
+            <h3 style="color: green;"><%= successMessage != null ? successMessage : "" %></h3>
+            <a href="login.jsp"><button class="login-btn">Go to Login</button></a>
+        </div>
+    </div>
+
+
 </div>
 </body>
 </html>

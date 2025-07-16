@@ -6,60 +6,38 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script>
         function validateLogin() {
-            let valid = true;
-
             const email = document.getElementById("email");
             const password = document.getElementById("password");
 
             const emailMsg = document.getElementById("email-error");
             const passwordMsg = document.getElementById("password-error");
 
-            // Reset states
+            // ✅ Clear old errors
             email.classList.remove("invalid");
             password.classList.remove("invalid");
             emailMsg.innerHTML = "";
             passwordMsg.innerHTML = "";
 
             const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-            // Email validation
+            // ✅ Step 1: Client-side email format validation
             if (email.value.trim().length === 0) {
                 email.classList.add("invalid");
-                emailMsg.innerHTML += "<p>Please fill in a Email address.</p>";
-                valid = false;
-            } else {
-                //Email complexity validation
-                if (!emailRegex.test(email.value)) {
-                    email.classList.add("invalid");
-                    emailMsg.innerHTML += "<p>Not a real Email address.</p>";
-                    valid = false;
-                }
+                emailMsg.innerHTML = "<p>Please fill in an Email address.</p>";
+                return false;
             }
 
-            // Password validation
-            if (password.value.trim().length === 0) {
-                password.classList.add("invalid");
-                passwordMsg.innerHTML += "<p>Password cannot be empty.</p>";
-                valid = false;
-            } else {
-                // Password complexity validation
-                if (!passwordRegex.test(password.value)) {
-                    password.classList.add("invalid");
-                    passwordMsg.innerHTML += "<p>Password must contain at least 1 uppercase, 1 digit, and be at least 8 characters.</p>";
-                    valid = false;
-                }
-
-                // Custom condition
-                if (password.value.includes(".")) {
-                    password.classList.add("invalid");
-                    passwordMsg.innerHTML += "<p>Password cannot contain a dot (.) character.</p>";
-                    valid = false;
-                }
+            if (!emailRegex.test(email.value)) {
+                email.classList.add("invalid");
+                emailMsg.innerHTML = "<p>Not a real Email address.</p>";
+                return false;
             }
 
-            return valid;
+            // ✅ Let the server validate the email existence and password
+            return true;
         }
+
+
 
 
 
@@ -98,11 +76,18 @@
     </form>
 
     <%
-        String error = request.getParameter("error");
-        if (error != null) {
-            out.println("<p style='color:red; margin-top:10px;'>" + error + "</p>");
-        }
+        String errorMessage = (String) request.getAttribute("errorMessage");
     %>
+    <% if (errorMessage != null) { %>
+    <div style="color: darkgray; margin-top: 10px;">
+        <% if (errorMessage.contains("Email not found")) { %>
+        Email not found. Would you like to register?
+        <a href="register.jsp" style="color: aliceblue; text-decoration: underline;">Register here</a>
+        <% } else { %>
+        <%= errorMessage %>
+        <% } %>
+    </div>
+    <% } %>
 
 
 </div>
