@@ -46,5 +46,12 @@ public class Appointment {
         this.status = status;
     }
 
-
+    public Appointment(){}
+    public Appointment(String student, String counselor, java.util.Date date, Time time, String Status) {
+        this.student = student;
+        this.counselor = counselor;
+        this.date = date;
+        this.time = time;
+        this.status = Status;
+    }
 }

@@ -42,10 +42,11 @@ public class Feedback {
     }
 
 
-    public Feedback(int id, String student, int rating, List<String> comments) {
+    public Feedback() {}
+    public Feedback(int id, String student, int rating, String[] comments) {
         this.id = id;
         this.student = student;
         this.rating = rating;
-        this.Comments = comments;
+        this.Comments = java.util.Arrays.asList(comments);
     }
 }
