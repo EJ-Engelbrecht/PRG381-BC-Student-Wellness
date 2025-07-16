@@ -19,6 +19,7 @@ public class AppointmentController {
             Connection conn = getConnection();
             this.appointmentDAOImpl = new AppointmentDAOImpl(conn);
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
             throw new RuntimeException("Failed to connect to DB", e);
         }
     }

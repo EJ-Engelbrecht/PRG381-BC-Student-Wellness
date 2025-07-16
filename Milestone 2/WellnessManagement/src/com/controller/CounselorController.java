@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static com.dao.DBConnection.getConnection;
+import javax.swing.*;
 
 public class CounselorController {
 
@@ -18,6 +19,7 @@ public class CounselorController {
             Connection conn = getConnection();
             this.counselorDAO = new CounselorDAOImpl(conn);
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
             throw new RuntimeException("Failed to connect to DB", e);
         }
     }
