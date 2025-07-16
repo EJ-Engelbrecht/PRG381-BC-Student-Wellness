@@ -1,9 +1,13 @@
 package com.view;
 
+import com.dao.DBConnection;
+import java.sql.Connection;
+import com.util.DBInitialization;
 import javax.swing.*;
 import com.view.AppointmentPanel;
 import com.view.FeedbackPanel;
 import com.view.CounselorPanel;
+
 
 public class DashboardFrame extends JFrame {
 
@@ -15,7 +19,7 @@ public class DashboardFrame extends JFrame {
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        tabbedPane.addTab("Appointments", new AppointmentPanel()); // Example
+        tabbedPane.addTab("Appointments", new AppointmentPanel()); 
         tabbedPane.addTab("Counselors", new CounselorPanel());
         tabbedPane.addTab("Feedback", new FeedbackPanel());        
         
@@ -25,6 +29,14 @@ public class DashboardFrame extends JFrame {
 
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(() -> new DashboardFrame());
+        try (Connection conn = DBConnection.getConnection()) {
+            if (conn != null) {
+                System.out.println("✅ Connected to DB.");
+                DBInitialization.setupDatabase(conn); // ✅ Call here
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
