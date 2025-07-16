@@ -40,4 +40,12 @@ public class Feedback {
     public void setComments(String[] comments) {
         this.Comments = Arrays.asList(comments);
     }
+
+
+    public Feedback(int id, String student, int rating, List<String> comments) {
+        this.id = id;
+        this.student = student;
+        this.rating = rating;
+        this.Comments = comments;
+    }
 }
