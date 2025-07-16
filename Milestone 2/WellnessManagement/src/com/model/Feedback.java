@@ -6,9 +6,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Feedback {
+    private int id;
     private String student;
     private int rating;
     private List<String> Comments;
+
+    public int getId() {
+        return this.id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getStudent() {
         return this.student;

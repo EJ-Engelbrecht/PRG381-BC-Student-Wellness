@@ -1,6 +1,6 @@
 package com.controller;
 
-import com.dao.FeedbackDAO;
+import com.dao.FeedbackDAOImpl;
 import com.model.Feedback;
 
 import javax.swing.*;
@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
 public class FeedbackController {
+    private FeedbackDAOImpl feedbackDAOImpl;
 
     public static void submitFeedback(JTextField txtStudent, JComboBox<Integer> cbRating, JTextArea txtComments) {
         String student = txtStudent.getText().trim();
@@ -20,12 +21,12 @@ public class FeedbackController {
         }
 
         Feedback fb = new Feedback(student, rating, comments);
-        FeedbackDAO.addFeedback(fb);
+        feedbackDAOImpl.registerFeedback(fb);
         JOptionPane.showMessageDialog(null, "Feedback submitted!");
     }
 
     public static void populateTable(JTable table) {
-        List<Feedback> feedbackList = FeedbackDAO.getAllFeedback();
+        List<Feedback> feedbackList = feedbackDAOImpl.getFeedback();
         DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Student", "Rating", "Comments"}, 0);
 
         for (Feedback fb : feedbackList) {
@@ -43,7 +44,7 @@ public class FeedbackController {
         }
 
         int id = (int) table.getValueAt(selectedRow, 0);
-        FeedbackDAO.deleteFeedback(id);
+        feedbackDAOImpl.deleteFeedback(id);
         JOptionPane.showMessageDialog(null, "Feedback deleted.");
     }
 

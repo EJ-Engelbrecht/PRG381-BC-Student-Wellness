@@ -115,4 +115,36 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             System.out.println("Appointment not Removed");
         }
     }
+
+    public boolean hasConflict(String counselor, Date date, Time time) {
+        String sql = "SELECT COUNT(*) FROM appointments WHERE counselor = ?, date = ?, time = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, counselor);
+            stmt.setDate(2, date);
+            stmt.setTime(3, time);
+
+            ResultSet result = stmt.executeQuery();
+
+            ResultSet rs = stmt.executeQuery(query)) {
+
+            int count;
+
+            if (rs.next()) {
+                count = rs.getInt(1);
+            } else {
+                return null;
+            }
+
+            if (count > 0) {
+                return false;
+            }
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

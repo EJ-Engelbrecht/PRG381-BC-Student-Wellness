@@ -9,4 +9,5 @@ interface CounselorDAO {
     void registerCounselor(Counselor counselor);
     void updateCounselor(Counselor counselor);
     void deleteCounselor(String name);
+    boolean hasConflict(Counselor counselor);
 }
