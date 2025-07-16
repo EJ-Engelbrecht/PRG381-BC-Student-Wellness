@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import java.time.LocalTime;
+import java.sql.Time;
 
 
 public class AppointmentDAOImpl implements AppointmentDAO {
@@ -30,6 +33,41 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             while (result.next()){
                 Appointment ap = new Appointment();
 
+                ap.setId(result.getInt("id"));
+                ap.setStudent(result.getString("student"));
+                ap.setCounselor(result.getString("counselor"));
+                ap.setDate(result.getDate("date"));
+                ap.setTime(result.getTime("time"));
+                ap.setStatus(result.getString("status"));
+
+                appointments.add(ap);
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return appointments;
+    }
+    
+    public List<Appointment> getAppointmentsByStudent(String name) {
+        String sql = "SELECT * FROM appointments WHERE name = ?";
+
+        List<Appointment> appointments = new ArrayList<Appointment>();
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, name);
+            
+            ResultSet result = stmt.executeQuery();
+
+            //adds record details to "Appointment" object which is appended to a appointments object list
+            while (result.next()){
+                Appointment ap = new Appointment();
+                
+                ap.setId(result.getInt("id"));
                 ap.setStudent(result.getString("student"));
                 ap.setCounselor(result.getString("counselor"));
                 ap.setDate(result.getDate("date"));
@@ -99,13 +137,13 @@ public class AppointmentDAOImpl implements AppointmentDAO {
     }
 
 
-    //Removes appointments record based on "Student" criteria
-    public void deleteAppointment(String student) {
+    //Removes appointments record based on "id" criteria
+    public void deleteAppointment(int id) {
         //prevents sql injection
-        String sql = "DELETE FROM appointments WHERE student = ?";
+        String sql = "DELETE FROM appointments WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, student);
+            stmt.setInt(1, id);
 
             stmt.executeUpdate();
 
@@ -122,17 +160,22 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, counselor);
-            stmt.setDate(2, date);
+            
+            //Converts standard date format to sql date format
+            java.util.Date utilDate = date;
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+            
+            stmt.setDate(2, sqlDate);
             stmt.setTime(3, time);
 
-            ResultSet result = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
 
             int count;
 
             if (rs.next()) {
                 count = rs.getInt(1);
             } else {
-                return null;
+                return false;
             }
 
             if (count > 0) {
@@ -142,7 +185,7 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return false;
         }
     }
 }

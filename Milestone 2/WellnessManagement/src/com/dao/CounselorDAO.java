@@ -8,5 +8,5 @@ interface CounselorDAO {
     List<Counselor> getCounselors();
     void registerCounselor(Counselor counselor);
     void updateCounselor(Counselor counselor);
-    void deleteCounselor(String name);
+    void deleteCounselor(int id);
 }

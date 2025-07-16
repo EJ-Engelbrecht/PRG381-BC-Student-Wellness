@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-class FeedbackDAOImpl implements FeedbackDAO {
+public class FeedbackDAOImpl implements FeedbackDAO {
     private Connection conn;
 
     public FeedbackDAOImpl(Connection conn) {
@@ -33,9 +33,9 @@ class FeedbackDAOImpl implements FeedbackDAO {
                 fb.setStudent(result.getString("student"));
                 fb.setRating(result.getInt("rating"));
 
-                //Converts sql Array format to standard Array format
-                java.sql.Array sqlArray = result.getArray("comments");
-                String[] comments = (String[]) sqlArray.getArray();
+                
+                String comments = result.getString("comments");
+                
                 fb.setComments(comments);
 
                 FeedbackList.add(fb);
@@ -58,10 +58,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, feedback.getStudent());
             stmt.setInt(2, feedback.getRating());
-
-            //converts standard array format to sql array format
-            java.sql.Array sqlArray = conn.createArrayOf("VARCHAR", feedback.getComments());
-            stmt.setArray(3, sqlArray);
+            stmt.setString(3, feedback.getComments());
 
             stmt.executeUpdate();
 
@@ -79,10 +76,7 @@ class FeedbackDAOImpl implements FeedbackDAO {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, feedback.getRating());
-
-            //converts standard array format to sql array format
-            java.sql.Array sqlArray = conn.createArrayOf("VARCHAR", feedback.getComments());
-            stmt.setArray(2, sqlArray);
+            stmt.setString(2, feedback.getComments());
 
             stmt.setInt(3, feedback.getId());
 

@@ -9,7 +9,7 @@ public class Feedback {
     private int id;
     private String student;
     private int rating;
-    private List<String> Comments;
+    private String Comments;
 
     public int getId() {
         return this.id;
@@ -34,19 +34,19 @@ public class Feedback {
         }
     }
 
-    public String[] getComments(){
-        return Comments.toArray(new String[0]);
+    public String getComments(){
+        return this.Comments;
     }
-    public void setComments(String[] comments) {
-        this.Comments = Arrays.asList(comments);
+    public void setComments(String comments) {
+        this.Comments = comments;
     }
 
 
     public Feedback() {}
-    public Feedback(int id, String student, int rating, String[] comments) {
+    public Feedback(int id, String student, int rating, String comments) {
         this.id = id;
         this.student = student;
         this.rating = rating;
-        this.Comments = java.util.Arrays.asList(comments);
+        this.Comments = comments;
     }
 }

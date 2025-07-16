@@ -8,5 +8,5 @@ interface FeedbackDAO {
     ArrayList<Feedback> getFeedback();
     void registerFeedback(Feedback feedback);
     void updateFeedback(Feedback feedback);
-    void deleteFeedback(String student);
+    void deleteFeedback(int id);
 }
