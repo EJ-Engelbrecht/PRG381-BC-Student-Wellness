@@ -63,7 +63,7 @@ public class FeedbackPanel extends javax.swing.JPanel {
         tblFeedback = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        cbRating = new javax.swing.JComboBox<Integer>();
+        cbRating = new javax.swing.JComboBox<>();
         txtStudentName = new javax.swing.JTextField();
         btnSubmit = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
@@ -94,6 +94,11 @@ public class FeedbackPanel extends javax.swing.JPanel {
         cbRating.setModel(new javax.swing.DefaultComboBoxModel<>(new Integer[] { 1, 2, 3, 4, 5 }));
 
         btnSubmit.setText("Submit");
+        btnSubmit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSubmitActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Edit");
 
@@ -166,13 +171,17 @@ public class FeedbackPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSubmitActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSubmit;
     private javax.swing.JButton btnViewAll;
-    private javax.swing.JComboBox<Integer> cbRating;
+    private javax.swing.JComboBox<String> cbRating;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
