@@ -13,15 +13,15 @@ import static com.dao.DBConnection.getConnection;
 
 public class FeedbackController {
 
-    private final FeedbackDAOImpl feedbackDAOImpl;
+    private FeedbackDAOImpl feedbackDAOImpl;
 
     public FeedbackController() {
         try {
             Connection conn = getConnection();
             this.feedbackDAOImpl = new FeedbackDAOImpl(conn);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Database connection failed.");
-            throw new RuntimeException("Database connection failed: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

@@ -12,15 +12,15 @@ import javax.swing.*;
 
 public class CounselorController {
 
-    private final CounselorDAOImpl counselorDAO;
+    private CounselorDAOImpl counselorDAO;
 
     public CounselorController() {
         try {
             Connection conn = getConnection();
             this.counselorDAO = new CounselorDAOImpl(conn);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
-            throw new RuntimeException("Failed to connect to DB", e);
+            e.printStackTrace();
         }
     }
 

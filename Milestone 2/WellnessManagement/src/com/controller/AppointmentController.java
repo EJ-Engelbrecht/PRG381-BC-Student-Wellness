@@ -12,15 +12,15 @@ import static com.dao.DBConnection.getConnection;
 
 public class AppointmentController {
 
-    private final AppointmentDAOImpl appointmentDAOImpl;
+    private AppointmentDAOImpl appointmentDAOImpl;
 
     public AppointmentController() {
         try {
             Connection conn = getConnection();
             this.appointmentDAOImpl = new AppointmentDAOImpl(conn);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
-            throw new RuntimeException("Failed to connect to DB", e);
+            e.printStackTrace();
         }
     }
 

@@ -86,30 +86,25 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         return appointments;
     }
 
-    //Insert new "Appointment" record
-    public void registerAppointment(Appointment appointment) {
-        //prevents sql injection
-        String sql = "INSERT INTO appointments (student, counselor, date, time, status) VALUES(?, ?, ?, ?, ?)";
+    public boolean registerAppointment(Appointment appointment) {
+    String sql = "INSERT INTO appointments (student, counselor, date, time, status) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, appointment.getStudent());
-            stmt.setString(2, appointment.getCounselor());
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, appointment.getStudent());
+        stmt.setString(2, appointment.getCounselor());
+        stmt.setDate(3, new java.sql.Date(appointment.getDate().getTime()));
+        stmt.setTime(4, appointment.getTime());
+        stmt.setString(5, appointment.getStatus());
 
-            //Converts standard date format to sql date format
-            java.util.Date utilDate = appointment.getDate();
-            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        int rowsAffected = stmt.executeUpdate();
+        return rowsAffected > 0;
 
-            stmt.setDate(3, sqlDate);
-            stmt.setTime(4, appointment.getTime());
-
-            stmt.executeUpdate();
-
-            System.out.println("Appointment added");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Appointment not added");
-        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
     }
+}
+
 
     //Updates Appointment details based on "Student" Criteria
     public void updateAppointment(Appointment appointment) {

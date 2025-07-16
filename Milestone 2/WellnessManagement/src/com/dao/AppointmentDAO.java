@@ -8,7 +8,7 @@ import java.sql.Time;
 //Methods to interact with the Appointments Table
 public interface AppointmentDAO {
     List<Appointment> getAppointments();
-    void registerAppointment(Appointment appointment);
+    boolean registerAppointment(Appointment appointment);
     void updateAppointment(Appointment appointment);
     void deleteAppointment(int id);
     List<Appointment> getAppointmentsByStudent(String name);
