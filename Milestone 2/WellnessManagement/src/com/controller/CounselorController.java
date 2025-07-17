@@ -5,8 +5,9 @@ import com.dao.DBConnection;
 import com.model.Counselor;
 
 import java.sql.Connection;
-import java.util.List;
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 public class CounselorController {
@@ -21,6 +22,14 @@ public class CounselorController {
             e.printStackTrace();
         }
     }
+    public List<String> getFormattedCounselorNames() {
+        List<Counselor> counselors = counselorDAOImpl.getAvailableCounselors();
+        List<String> formattedList = new ArrayList<>();
+        for (Counselor c : counselors) {
+            formattedList.add(c.getSpecialization() + " - " + c.getName());
+        }
+    return formattedList;
+}   
 
     public void addCounselor(Counselor counselor) {
         counselorDAOImpl.registerCounselor(counselor);
@@ -53,6 +62,15 @@ public class CounselorController {
     }
 
     table.setModel(model);
+}
+    
+    public List<String> getFormattedCounselorList() {
+        List<String> formattedList = new ArrayList<>();
+        List<Counselor> counselors = counselorDAOImpl.getAvailableCounselors();
+        for (Counselor c : counselors) {
+            formattedList.add(c.getSpecialization() + " - " + c.getName());
+        }
+    return formattedList;
 }
 }
 

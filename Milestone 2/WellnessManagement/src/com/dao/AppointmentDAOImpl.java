@@ -189,20 +189,44 @@ public class AppointmentDAOImpl implements AppointmentDAO {
     }
 
 
-    //Removes appointments record based on "id" criteria
-    public void deleteAppointment(int id) {
-        //prevents sql injection
-        String sql = "DELETE FROM appointments WHERE id = ?";
+    
+    public Appointment getAppointmentById(int id) {
+    Appointment appointment = null;
+    String query = "SELECT * FROM appointments WHERE id = ?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            int rowsAffected = stmt.executeUpdate();
-            System.out.println("Appointment Removed");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Appointment not Removed");
+    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            appointment = new Appointment();
+            appointment.setId(rs.getInt("id"));
+            appointment.setStudent(rs.getString("student_name"));
+            appointment.setCounselor(rs.getString("counselor_id"));
+            appointment.setDate(rs.getDate("date"));
+            appointment.setTime(rs.getTime("time"));
+            appointment.setStatus(rs.getString("status"));
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+
+    return appointment;
+}
+    
+    public boolean updateAppointmentStatus(int appointmentId, String newStatus) {
+    String sql = "UPDATE appointments SET status = ? WHERE id = ?";
+
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, newStatus);
+        stmt.setInt(2, appointmentId);
+        int rowsUpdated = stmt.executeUpdate();
+        return rowsUpdated > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 
     public boolean hasConflict(String counselor, Date date, Time time) {
         String sql = "SELECT COUNT(*) FROM appointments WHERE counselor = ?, date = ?, time = ?";

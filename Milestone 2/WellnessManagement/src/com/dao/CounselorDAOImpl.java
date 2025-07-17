@@ -113,8 +113,28 @@ public class CounselorDAOImpl implements CounselorDAO {
     }
     
     public boolean addCounselor(Counselor counselor) {
+        return true;
+    }
+    
+    public List<Counselor> getAvailableCounselors() {
+    List<Counselor> list = new ArrayList<>();
+    String sql = "SELECT id, name, specialization, availability FROM counselors WHERE availability = TRUE ORDER BY specialization ASC, name ASC";
 
-    return true;
+    try (PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+            Counselor counselor = new Counselor();
+            counselor.setId(rs.getInt("id"));
+            counselor.setName(rs.getString("name"));
+            counselor.setSpecialization(rs.getString("specialization"));
+            counselor.setAvailability(rs.getBoolean("availability"));
+            list.add(counselor);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
 }
+
 
 }

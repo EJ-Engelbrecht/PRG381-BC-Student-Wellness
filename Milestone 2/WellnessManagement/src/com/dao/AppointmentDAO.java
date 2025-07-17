@@ -10,7 +10,6 @@ public interface AppointmentDAO {
     List<Appointment> getAppointments();
     boolean registerAppointment(Appointment appointment);
     boolean updateAppointment(Appointment appointment);
-    void deleteAppointment(int id);
     List<Appointment> getAppointmentsByStudent(String name);
     boolean hasConflict(String counselor, Date date, Time time);
 }
