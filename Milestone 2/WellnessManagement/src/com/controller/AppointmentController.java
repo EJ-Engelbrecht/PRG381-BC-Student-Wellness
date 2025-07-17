@@ -35,10 +35,7 @@ public class AppointmentController {
         return true;
     }
 
-    public boolean cancelAppointment(int id) {
-        appointmentDAOImpl.deleteAppointment(id);
-        return true;
-    }
+
 
     public List<Appointment> getAppointmentsByStudent(String studentName) {
         return appointmentDAOImpl.getAppointmentsByStudent(studentName);

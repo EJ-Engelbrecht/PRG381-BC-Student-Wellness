@@ -4,7 +4,6 @@
  */
 package com.view;
 
-
 import com.dao.AppointmentDAOImpl;
 
 import com.controller.AppointmentController;
@@ -21,22 +20,26 @@ import java.util.List;
  *
  * @author chesa
  */
-public class AppointmentPanel extends javax.swing.JPanel implements com.dao.CounselorChangeListener  {
-    private AppointmentDAOImpl appointmentDAOImpl; 
+public class AppointmentPanel extends javax.swing.JPanel implements com.dao.CounselorChangeListener {
+
+    private AppointmentDAOImpl appointmentDAOImpl;
     private AppointmentController appointmentController;
-    private final CounselorController counselorController = new CounselorController();
+private final CounselorController counselorController = CounselorController.getInstance(); // ✅ singleton
     @Override
     public void onCounselorListChanged() {
         refreshCounselorDropdown();
     }
 
     public void refreshCounselorDropdown() {
-        cbCounselor.removeAllItems();
-        List<String> names = counselorController.getFormattedCounselorList();
-        for (String name : names) {
-            cbCounselor.addItem(name);
-        }
+    cbCounselor.removeAllItems();
+    List<String> names = counselorController.getFormattedCounselorList();
+    System.out.println("Dropdown refresh triggered. Counselors: " + names); // 🧪
+    for (String name : names) {
+        cbCounselor.addItem(name);
     }
+}
+
+
     /**
      * Creates new form AppointmentPanel1
      */
@@ -44,42 +47,45 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
         initComponents();
         appointmentDAOImpl = new AppointmentDAOImpl(DBConnection.getConnection());
         appointmentController = new AppointmentController();
-        // Add ListSelectionListener to jTable1 to populate fields when a row is selected
-        
-        loadCounselors();
-        clearFields();
-        
-        
-        jTable1.getSelectionModel().addListSelectionListener(e -> {
-        if (!e.getValueIsAdjusting()) {
-            int selectedRow = jTable1.getSelectedRow();
-            if (selectedRow != -1) {
-                tfStudentName.setText(jTable1.getValueAt(selectedRow, 3).toString());
-                cbCounselor.setSelectedItem(jTable1.getValueAt(selectedRow, 4).toString());
-                tfDate.setText(jTable1.getValueAt(selectedRow, 1).toString());
 
-                String timeFromDB = jTable1.getValueAt(selectedRow, 2).toString(); // full time e.g. "09:30:00"
-                String[] timeParts = timeFromDB.split(":");
-                if (timeParts.length >= 2) {
-                    String formattedTime = timeParts[0] + ":" + timeParts[1]; // HH:mm
-                    cbTime.setSelectedItem(formattedTime);
-                } else {
-                    cbTime.setSelectedIndex(-1);
+        // ✅ Register this panel as a listener for counselor changes
+        counselorController.addCounselorChangeListener(this);
+
+        loadCounselors();   // initial dropdown population
+        clearFields();
+
+        // Table selection logic
+        jTable1.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = jTable1.getSelectedRow();
+                if (selectedRow != -1) {
+                    tfStudentName.setText(jTable1.getValueAt(selectedRow, 3).toString());
+                    cbCounselor.setSelectedItem(jTable1.getValueAt(selectedRow, 4).toString());
+                    tfDate.setText(jTable1.getValueAt(selectedRow, 1).toString());
+
+                    String timeFromDB = jTable1.getValueAt(selectedRow, 2).toString(); // full time e.g. "09:30:00"
+                    String[] timeParts = timeFromDB.split(":");
+                    if (timeParts.length >= 2) {
+                        String formattedTime = timeParts[0] + ":" + timeParts[1]; // HH:mm
+                        cbTime.setSelectedItem(formattedTime);
+                    } else {
+                        cbTime.setSelectedIndex(-1);
+                    }
+                    cbStatus.setSelectedItem(jTable1.getValueAt(selectedRow, 5).toString());
                 }
-                cbStatus.setSelectedItem(jTable1.getValueAt(selectedRow, 5).toString());
             }
-        }
-    });
+        });
     }
-    
+
     private void loadCounselors() {
-        cbCounselor.removeAllItems();
-        List<String> counselorList = counselorController.getFormattedCounselorNames();
-        for (String name : counselorList) {
-            cbCounselor.addItem(name);
-        }
+    cbCounselor.removeAllItems();
+    List<String> counselorList = counselorController.getFormattedCounselorList();
+    for (String name : counselorList) {
+        cbCounselor.addItem(name);
     }
-    
+}
+
+
     private boolean checkTimeConflict(int appointmentId, String dateStr, String timeStr, String counselor) {
         // Check time conflict using the DAO method
         return appointmentDAOImpl.hasTimeConflict(appointmentId, dateStr, timeStr, counselor);
@@ -264,6 +270,13 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
                         "Time Conflict", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+            java.time.LocalDate selectedDate = date.toLocalDate();
+            if (selectedDate.isBefore(java.time.LocalDate.now())) {
+                JOptionPane.showMessageDialog(this,
+                        "⚠️ Cannot schedule an appointment for a past date.",
+                        "Invalid Date", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             // Save appointment
             Connection conn = DBConnection.getConnection();
@@ -272,7 +285,7 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
                 return;
             }
             appointmentDAOImpl.registerAppointment(appointment);
-            
+
             JOptionPane.showMessageDialog(this, "✅ Appointment added successfully.");
             refreshAppointmentTable();
             clearFields();
@@ -283,8 +296,7 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
         clearFields();
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    
-    
+
     private void btnViewAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAllActionPerformed
         // TODO add your handling code here:
         AppointmentController controller = new AppointmentController();
@@ -294,10 +306,10 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
         List<Appointment> appointments = controller.getUpcomingAppointments();
         table.setModel(controller.createAppointmentTableModel(appointments));
     }
-    
+
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        
-         try {
+
+        try {
             int selectedRow = jTable1.getSelectedRow();
 
             if (selectedRow == -1) {
@@ -310,6 +322,14 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
             String newTime = cbTime.getSelectedItem().toString().trim() + ":00"; // format: HH:mm:ss
             String newStatus = cbStatus.getSelectedItem().toString();
             String counselor = cbCounselor.getSelectedItem().toString();
+
+            java.time.LocalDate selectedDate = java.sql.Date.valueOf(newDate).toLocalDate();
+            if (selectedDate.isBefore(java.time.LocalDate.now())) {
+                JOptionPane.showMessageDialog(this,
+                        "⚠️ Cannot update to a past date.",
+                        "Invalid Date", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             // Check for time conflict
             boolean conflict = checkTimeConflict(appointmentId, newDate, newTime, counselor);
@@ -344,10 +364,10 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "⚠️ Error updating appointment: " + e.getMessage());
             e.printStackTrace(); // Log exception details
-        } 
-        
+        }
+
     }//GEN-LAST:event_btnUpdateActionPerformed
-    
+
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         int selectedRow = jTable1.getSelectedRow();
@@ -368,13 +388,13 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
             JOptionPane.showMessageDialog(this, "⚠️ Failed to cancel appointment.");
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
-   
+
     private void refreshAppointmentTable() {
         AppointmentController controller = new AppointmentController();
         List<Appointment> appointments = controller.getUpcomingAppointments();
         jTable1.setModel(controller.createAppointmentTableModel(appointments));
     }
-    
+
     private void clearFields() {
         tfStudentName.setText("");
         tfDate.setText("");
@@ -382,12 +402,8 @@ public class AppointmentPanel extends javax.swing.JPanel implements com.dao.Coun
         cbTime.setSelectedIndex(-1);
         cbStatus.setSelectedIndex(-1);
     }
-    
- 
-    
-    
 
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;

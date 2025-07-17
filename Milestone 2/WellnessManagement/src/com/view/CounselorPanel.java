@@ -26,7 +26,7 @@ public class CounselorPanel extends javax.swing.JPanel {
      */
     public CounselorPanel() {
         initComponents();
-        controller = new CounselorController();
+        controller = CounselorController.getInstance();
         btnViewAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnViewAllActionPerformed(evt);
@@ -180,7 +180,8 @@ public class CounselorPanel extends javax.swing.JPanel {
         counselor.setSpecialization(specialization);
         counselor.setAvailability(available);
 
-        CounselorController controller = new CounselorController();
+        CounselorController controller = CounselorController.getInstance();
+
         controller.addCounselor(counselor);
 
         JOptionPane.showMessageDialog(null, "✅ Counselor added successfully!");
