@@ -79,17 +79,29 @@
 
             const email = document.getElementById("email");
             const phone = document.getElementById("phone");
+            const id = document.getElementById("student_number");
 
             const emailMsg = document.getElementById("email-error");
             const phoneMsg = document.getElementById("phone-error");
+            const idMsg = document.getElementById("id-error")
 
             email.classList.remove("invalid");
             phone.classList.remove("invalid");
+            id.classList.remove("invalid");
             emailMsg.textContent = "";
             phoneMsg.textContent = "";
+            idMsg.textContent = "";
 
             const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
             const phoneRegex = /^\(\d{3}\)-\d{3}-\d{4}$/;
+            const sixDigitRegex = /^\d{6}$/;
+
+            const studentValue = id.value.trim();
+            if (!sixDigitRegex.test(studentValue)) {
+                id.classList.add("invalid");
+                idMsg.innerHTML = "<p>Student Number must be exactly 6 digits and only numbers.</p>";
+                valid = false;
+            }
 
             if (email.value.trim().length === 0) {
                 email.classList.add("invalid");
@@ -133,9 +145,11 @@
             const confirm = document.getElementById("confirm-password");
             const passwordMsg = document.getElementById("password-error");
 
+
             password.classList.remove("invalid");
             confirm.classList.remove("invalid");
             passwordMsg.textContent = "";
+
 
             const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
@@ -172,6 +186,8 @@
                 toggleIcon.src = "./images/eye-closed.png";
             }
         }
+
+
     </script>
 </head>
 <body>
@@ -182,7 +198,8 @@
     <!-- Step 1 -->
     <form id="step1" onsubmit="return validateStep1();">
         <button type="button" class="back-arrow" onclick="history.back()" title="Back"></button>
-        Student Number: <input type="text" name="student_number" id="student_number" required><br>
+        Student Number: <input type="text" name="student_number" id="student_number" required maxlength="6"><br>
+        <div id="id-error" class="error-message"></div>
         Name: <input type="text" name="name" id="name" required><br>
         Surname: <input type="text" name="surname" id="surname" required><br>
 
