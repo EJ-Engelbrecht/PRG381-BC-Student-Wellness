@@ -61,7 +61,15 @@ private final CounselorController counselorController = CounselorController.getI
                 if (selectedRow != -1) {
                     tfStudentName.setText(jTable1.getValueAt(selectedRow, 3).toString());
                     cbCounselor.setSelectedItem(jTable1.getValueAt(selectedRow, 4).toString());
-                    tfDate.setText(jTable1.getValueAt(selectedRow, 1).toString());
+                    
+                    String dateStr = jTable1.getValueAt(selectedRow, 1).toString();
+                    try {
+                        java.util.Date utilDate = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+                        jDateChooser1.setDate(utilDate);
+                    } catch (java.text.ParseException ex) {
+                        ex.printStackTrace();
+                        jDateChooser1.setDate(null); // fallback if parsing fails
+                    }
 
                     String timeFromDB = jTable1.getValueAt(selectedRow, 2).toString(); // full time e.g. "09:30:00"
                     String[] timeParts = timeFromDB.split(":");
@@ -106,7 +114,6 @@ private final CounselorController counselorController = CounselorController.getI
         lblTime = new javax.swing.JLabel();
         lblStatus = new javax.swing.JLabel();
         tfStudentName = new javax.swing.JTextField();
-        tfDate = new javax.swing.JTextField();
         cbCounselor = new javax.swing.JComboBox<>();
         cbTime = new javax.swing.JComboBox<>();
         cbStatus = new javax.swing.JComboBox<>();
@@ -116,6 +123,7 @@ private final CounselorController counselorController = CounselorController.getI
         jTable1 = new javax.swing.JTable();
         btnUpdate = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
 
         lblStudentName.setText("Student Name:");
 
@@ -186,7 +194,7 @@ private final CounselorController counselorController = CounselorController.getI
                     .addComponent(tfStudentName, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfDate, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbCounselor, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -204,27 +212,28 @@ private final CounselorController counselorController = CounselorController.getI
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(9, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblStudentName)
                     .addComponent(tfStudentName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(btnSave)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnSave)
+                            .addComponent(cbCounselor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(btnUpdate)
                         .addGap(18, 18, 18)
                         .addComponent(btnDelete))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblCounselor)
-                            .addComponent(cbCounselor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(25, 25, 25)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblDate)
-                            .addComponent(tfDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblCounselor)
+                                .addGap(31, 31, 31)
+                                .addComponent(lblDate))
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblTime)
@@ -249,12 +258,16 @@ private final CounselorController counselorController = CounselorController.getI
             String student = tfStudentName.getText().trim();
             String counselor = cbCounselor.getSelectedItem().toString();
             String status = cbStatus.getSelectedItem().toString();
-            String dateStr = tfDate.getText().trim(); // format: YYYY-MM-DD
+            java.util.Date utilDate = jDateChooser1.getDate();
+                if (utilDate == null) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Please select a valid date.");
+                    return;
+                }
+            java.sql.Date date = new java.sql.Date(utilDate.getTime());
+            String dateStr = date.toString();  // if you still need the String version
             String timeStr = cbTime.getSelectedItem().toString().trim() + ":00"; // format: HH:mm:ss
 
-            java.sql.Date date = java.sql.Date.valueOf(dateStr);
             java.sql.Time time = java.sql.Time.valueOf(timeStr);
-
             Appointment appointment = new Appointment();
             appointment.setStudent(student);
             appointment.setCounselor(counselor);
@@ -290,7 +303,7 @@ private final CounselorController counselorController = CounselorController.getI
             refreshAppointmentTable();
             clearFields();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "⚠️ Failed to save appointment.\nSee console for details.");
+            JOptionPane.showMessageDialog(this, "⚠️ Failed to save appointment fields are incorect");
             ex.printStackTrace(); // Log exception details
         }
         clearFields();
@@ -318,12 +331,18 @@ private final CounselorController counselorController = CounselorController.getI
             }
 
             int appointmentId = (int) jTable1.getValueAt(selectedRow, 0);
-            String newDate = tfDate.getText().trim(); // expect format "YYYY-MM-DD"
+            java.util.Date utilDate = jDateChooser1.getDate();
+                if (utilDate == null) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Please select a valid date.");
+                    return;
+                }
+            java.sql.Date date = new java.sql.Date(utilDate.getTime());
+            String dateStr = date.toString();  // if you still need the String version
             String newTime = cbTime.getSelectedItem().toString().trim() + ":00"; // format: HH:mm:ss
             String newStatus = cbStatus.getSelectedItem().toString();
             String counselor = cbCounselor.getSelectedItem().toString();
 
-            java.time.LocalDate selectedDate = java.sql.Date.valueOf(newDate).toLocalDate();
+            java.time.LocalDate selectedDate = java.sql.Date.valueOf(dateStr).toLocalDate();
             if (selectedDate.isBefore(java.time.LocalDate.now())) {
                 JOptionPane.showMessageDialog(this,
                         "⚠️ Cannot update to a past date.",
@@ -332,7 +351,7 @@ private final CounselorController counselorController = CounselorController.getI
             }
 
             // Check for time conflict
-            boolean conflict = checkTimeConflict(appointmentId, newDate, newTime, counselor);
+            boolean conflict = checkTimeConflict(appointmentId, dateStr, newTime, counselor);
             if (conflict) {
                 JOptionPane.showMessageDialog(this,
                         "This time slot is not available. Appointments must be at least 30 minutes apart.",
@@ -343,7 +362,7 @@ private final CounselorController counselorController = CounselorController.getI
             // Build updated appointment object
             Appointment updatedAppointment = new Appointment();
             updatedAppointment.setId(appointmentId);
-            updatedAppointment.setDate(java.sql.Date.valueOf(newDate));
+            updatedAppointment.setDate(java.sql.Date.valueOf(dateStr));
             updatedAppointment.setTime(java.sql.Time.valueOf(newTime));
             updatedAppointment.setStatus(newStatus);
             updatedAppointment.setCounselor(counselor);
@@ -397,7 +416,7 @@ private final CounselorController counselorController = CounselorController.getI
 
     private void clearFields() {
         tfStudentName.setText("");
-        tfDate.setText("");
+        jDateChooser1.setDate(null); 
         cbCounselor.setSelectedIndex(-1);
         cbTime.setSelectedIndex(-1);
         cbStatus.setSelectedIndex(-1);
@@ -412,6 +431,7 @@ private final CounselorController counselorController = CounselorController.getI
     private javax.swing.JComboBox<String> cbCounselor;
     private javax.swing.JComboBox<String> cbStatus;
     private javax.swing.JComboBox<String> cbTime;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblCounselor;
@@ -419,7 +439,6 @@ private final CounselorController counselorController = CounselorController.getI
     private javax.swing.JLabel lblStatus;
     private javax.swing.JLabel lblStudentName;
     private javax.swing.JLabel lblTime;
-    private javax.swing.JTextField tfDate;
     private javax.swing.JTextField tfStudentName;
     // End of variables declaration//GEN-END:variables
 }
