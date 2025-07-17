@@ -147,6 +147,7 @@ a.register-btn {
 }
 
 /* Input Fields */
+input[type ="number"],
 input[type="text"],
 input[type="email"],
 input[type="password"],
