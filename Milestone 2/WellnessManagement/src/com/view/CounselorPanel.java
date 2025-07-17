@@ -7,6 +7,7 @@ package com.view;
 import com.controller.CounselorController;
 import com.model.Counselor;
 import javax.swing.JOptionPane;
+import com.dao.CounselorChangeListener;
 
 /**
  *
@@ -15,7 +16,11 @@ import javax.swing.JOptionPane;
 public class CounselorPanel extends javax.swing.JPanel {
 
     private CounselorController controller;
-
+    private CounselorChangeListener changeListener;
+    
+    public void setCounselorChangeListener(CounselorChangeListener listener) {
+        this.changeListener = listener;
+    }
     /**
      * Creates new form CounselorPanel1
      */
@@ -179,6 +184,7 @@ public class CounselorPanel extends javax.swing.JPanel {
         controller.addCounselor(counselor);
 
         JOptionPane.showMessageDialog(null, "✅ Counselor added successfully!");
+        
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnViewAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAllActionPerformed

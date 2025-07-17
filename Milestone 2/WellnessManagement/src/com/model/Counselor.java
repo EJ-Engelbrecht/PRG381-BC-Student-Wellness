@@ -50,5 +50,8 @@ public class Counselor {
         this.specialization = specialization;
         this.availability = availability;
     }
-
+    @Override
+        public String toString() {
+        return specialization + " - " + name;
+    }
 }
