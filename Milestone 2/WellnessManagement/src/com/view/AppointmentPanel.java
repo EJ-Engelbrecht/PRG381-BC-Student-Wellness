@@ -4,24 +4,91 @@
  */
 package com.view;
 
-import com.dao.AppointmentDAO;
 import com.dao.AppointmentDAOImpl;
+
+import com.controller.AppointmentController;
+import com.controller.CounselorController;
 import com.dao.DBConnection;
 import com.model.Appointment;
+
 import java.sql.Connection;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import java.util.List;
 
 /**
  *
  * @author chesa
  */
-public class AppointmentPanel extends javax.swing.JPanel {
+public class AppointmentPanel extends javax.swing.JPanel implements com.dao.CounselorChangeListener {
+
+    private AppointmentDAOImpl appointmentDAOImpl;
+    private AppointmentController appointmentController;
+private final CounselorController counselorController = CounselorController.getInstance(); // ✅ singleton
+    @Override
+    public void onCounselorListChanged() {
+        refreshCounselorDropdown();
+    }
+
+    public void refreshCounselorDropdown() {
+    cbCounselor.removeAllItems();
+    List<String> names = counselorController.getFormattedCounselorList();
+    System.out.println("Dropdown refresh triggered. Counselors: " + names); // 🧪
+    for (String name : names) {
+        cbCounselor.addItem(name);
+    }
+}
+
 
     /**
      * Creates new form AppointmentPanel1
      */
     public AppointmentPanel() {
         initComponents();
+        appointmentDAOImpl = new AppointmentDAOImpl(DBConnection.getConnection());
+        appointmentController = new AppointmentController();
+
+        // ✅ Register this panel as a listener for counselor changes
+        counselorController.addCounselorChangeListener(this);
+
+        loadCounselors();   // initial dropdown population
+        clearFields();
+
+        // Table selection logic
+        jTable1.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = jTable1.getSelectedRow();
+                if (selectedRow != -1) {
+                    tfStudentName.setText(jTable1.getValueAt(selectedRow, 3).toString());
+                    cbCounselor.setSelectedItem(jTable1.getValueAt(selectedRow, 4).toString());
+                    tfDate.setText(jTable1.getValueAt(selectedRow, 1).toString());
+
+                    String timeFromDB = jTable1.getValueAt(selectedRow, 2).toString(); // full time e.g. "09:30:00"
+                    String[] timeParts = timeFromDB.split(":");
+                    if (timeParts.length >= 2) {
+                        String formattedTime = timeParts[0] + ":" + timeParts[1]; // HH:mm
+                        cbTime.setSelectedItem(formattedTime);
+                    } else {
+                        cbTime.setSelectedIndex(-1);
+                    }
+                    cbStatus.setSelectedItem(jTable1.getValueAt(selectedRow, 5).toString());
+                }
+            }
+        });
+    }
+
+    private void loadCounselors() {
+    cbCounselor.removeAllItems();
+    List<String> counselorList = counselorController.getFormattedCounselorList();
+    for (String name : counselorList) {
+        cbCounselor.addItem(name);
+    }
+}
+
+
+    private boolean checkTimeConflict(int appointmentId, String dateStr, String timeStr, String counselor) {
+        // Check time conflict using the DAO method
+        return appointmentDAOImpl.hasTimeConflict(appointmentId, dateStr, timeStr, counselor);
     }
 
     /**
@@ -44,6 +111,11 @@ public class AppointmentPanel extends javax.swing.JPanel {
         cbTime = new javax.swing.JComboBox<>();
         cbStatus = new javax.swing.JComboBox<>();
         btnSave = new javax.swing.JButton();
+        btnViewAll = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        btnUpdate = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
 
         lblStudentName.setText("Student Name:");
 
@@ -55,9 +127,7 @@ public class AppointmentPanel extends javax.swing.JPanel {
 
         lblStatus.setText("Status:");
 
-        cbCounselor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Test" }));
-
-        cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "08:00 ", "09:00 ", "10:00 ", "11:00 ", "12:00", "13:00", "14:00", "15:00", "16:00" }));
+        cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00" }));
 
         cbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Scheduled", "Completed", "Cancelled" }));
 
@@ -68,57 +138,109 @@ public class AppointmentPanel extends javax.swing.JPanel {
             }
         });
 
+        btnViewAll.setText("View All Apointments");
+        btnViewAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnViewAllActionPerformed(evt);
+            }
+        });
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        btnUpdate.setText(" Update Apointment");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
+
+        btnDelete.setText("Cancel Apointment");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblStudentName)
                     .addComponent(lblCounselor)
                     .addComponent(lblDate)
                     .addComponent(lblTime)
-                    .addComponent(lblStatus))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 313, Short.MAX_VALUE)
+                    .addComponent(lblStatus)
+                    .addComponent(lblStudentName))
+                .addGap(112, 112, 112)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tfStudentName, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfDate, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbCounselor, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(tfStudentName)
-                    .addComponent(tfDate)
-                    .addComponent(cbCounselor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cbTime, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cbStatus, 0, 210, Short.MAX_VALUE))
-                .addGap(14, 14, 14))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(256, 256, 256)
-                .addComponent(btnSave)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(54, 54, 54))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(117, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(btnViewAll)
+                .addGap(101, 101, 101))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblStudentName)
                     .addComponent(tfStudentName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCounselor)
-                    .addComponent(cbCounselor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblDate)
-                    .addComponent(tfDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(25, 25, 25)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblTime)
-                    .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSave)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnUpdate)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblCounselor)
+                            .addComponent(cbCounselor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(25, 25, 25)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblDate)
+                            .addComponent(tfDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblTime)
+                            .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblStatus)
+                            .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblStatus)
-                    .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(19, 19, 19)
-                .addComponent(btnSave)
-                .addContainerGap(26, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(133, 133, 133)
+                        .addComponent(btnViewAll)
+                        .addGap(119, 119, 119)))
+                .addGap(19, 19, 19))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -128,7 +250,7 @@ public class AppointmentPanel extends javax.swing.JPanel {
             String counselor = cbCounselor.getSelectedItem().toString();
             String status = cbStatus.getSelectedItem().toString();
             String dateStr = tfDate.getText().trim(); // format: YYYY-MM-DD
-            String timeStr = cbTime.getSelectedItem().toString().trim() + ":00";
+            String timeStr = cbTime.getSelectedItem().toString().trim() + ":00"; // format: HH:mm:ss
 
             java.sql.Date date = java.sql.Date.valueOf(dateStr);
             java.sql.Time time = java.sql.Time.valueOf(timeStr);
@@ -140,30 +262,158 @@ public class AppointmentPanel extends javax.swing.JPanel {
             appointment.setTime(time);
             appointment.setStatus(status);
 
-            // use registerAppointment instead of addAppointment
+            // Check for time conflict
+            boolean conflict = checkTimeConflict(-1, dateStr, timeStr, counselor); // -1 for new appointment
+            if (conflict) {
+                JOptionPane.showMessageDialog(this,
+                        "This time slot is not available. Appointments must be at least 30 minutes apart.",
+                        "Time Conflict", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            java.time.LocalDate selectedDate = date.toLocalDate();
+            if (selectedDate.isBefore(java.time.LocalDate.now())) {
+                JOptionPane.showMessageDialog(this,
+                        "⚠️ Cannot schedule an appointment for a past date.",
+                        "Invalid Date", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Save appointment
             Connection conn = DBConnection.getConnection();
             if (conn == null) {
                 JOptionPane.showMessageDialog(this, "❌ Failed to connect to the database.");
                 return;
             }
-            AppointmentDAO dao = new AppointmentDAOImpl(conn);
-            dao.registerAppointment(appointment);
+            appointmentDAOImpl.registerAppointment(appointment);
 
             JOptionPane.showMessageDialog(this, "✅ Appointment added successfully.");
-
+            refreshAppointmentTable();
+            clearFields();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "⚠️ Failed to save appointment.\nSee console for details.");
-            ex.printStackTrace();  // ✅ this is the real source of truth
+            ex.printStackTrace(); // Log exception details
         }
-
+        clearFields();
     }//GEN-LAST:event_btnSaveActionPerformed
 
 
+    private void btnViewAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAllActionPerformed
+        // TODO add your handling code here:
+        AppointmentController controller = new AppointmentController();
+        displayAppointments(controller, jTable1);
+    }//GEN-LAST:event_btnViewAllActionPerformed
+    public void displayAppointments(AppointmentController controller, JTable table) {
+        List<Appointment> appointments = controller.getUpcomingAppointments();
+        table.setModel(controller.createAppointmentTableModel(appointments));
+    }
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+
+        try {
+            int selectedRow = jTable1.getSelectedRow();
+
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select an appointment to update.");
+                return;
+            }
+
+            int appointmentId = (int) jTable1.getValueAt(selectedRow, 0);
+            String newDate = tfDate.getText().trim(); // expect format "YYYY-MM-DD"
+            String newTime = cbTime.getSelectedItem().toString().trim() + ":00"; // format: HH:mm:ss
+            String newStatus = cbStatus.getSelectedItem().toString();
+            String counselor = cbCounselor.getSelectedItem().toString();
+
+            java.time.LocalDate selectedDate = java.sql.Date.valueOf(newDate).toLocalDate();
+            if (selectedDate.isBefore(java.time.LocalDate.now())) {
+                JOptionPane.showMessageDialog(this,
+                        "⚠️ Cannot update to a past date.",
+                        "Invalid Date", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Check for time conflict
+            boolean conflict = checkTimeConflict(appointmentId, newDate, newTime, counselor);
+            if (conflict) {
+                JOptionPane.showMessageDialog(this,
+                        "This time slot is not available. Appointments must be at least 30 minutes apart.",
+                        "Time Conflict", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Build updated appointment object
+            Appointment updatedAppointment = new Appointment();
+            updatedAppointment.setId(appointmentId);
+            updatedAppointment.setDate(java.sql.Date.valueOf(newDate));
+            updatedAppointment.setTime(java.sql.Time.valueOf(newTime));
+            updatedAppointment.setStatus(newStatus);
+            updatedAppointment.setCounselor(counselor);
+            updatedAppointment.setStudent(tfStudentName.getText().trim());
+
+            // Update appointment
+            boolean success = appointmentDAOImpl.updateAppointment(updatedAppointment);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "✅ Appointment updated successfully.");
+                refreshAppointmentTable(); // Refresh table after update
+                clearFields(); // Clear input fields after update
+            } else {
+                JOptionPane.showMessageDialog(this, "⚠️ Failed to update appointment.");
+            }
+
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "⚠️ Invalid date or time format. Please check your inputs.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "⚠️ Error updating appointment: " + e.getMessage());
+            e.printStackTrace(); // Log exception details
+        }
+
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an appointment to cancel.");
+            return;
+        }
+
+        int appointmentId = (int) jTable1.getValueAt(selectedRow, 0);
+
+        // Update appointment status to "Cancelled"
+        boolean success = appointmentDAOImpl.updateAppointmentStatus(appointmentId, "Cancelled");
+        if (success) {
+            JOptionPane.showMessageDialog(this, "✅ Appointment cancelled successfully.");
+            refreshAppointmentTable(); // Refresh table after cancel
+        } else {
+            JOptionPane.showMessageDialog(this, "⚠️ Failed to cancel appointment.");
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void refreshAppointmentTable() {
+        AppointmentController controller = new AppointmentController();
+        List<Appointment> appointments = controller.getUpcomingAppointments();
+        jTable1.setModel(controller.createAppointmentTableModel(appointments));
+    }
+
+    private void clearFields() {
+        tfStudentName.setText("");
+        tfDate.setText("");
+        cbCounselor.setSelectedIndex(-1);
+        cbTime.setSelectedIndex(-1);
+        cbStatus.setSelectedIndex(-1);
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnUpdate;
+    private javax.swing.JButton btnViewAll;
     private javax.swing.JComboBox<String> cbCounselor;
     private javax.swing.JComboBox<String> cbStatus;
     private javax.swing.JComboBox<String> cbTime;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblCounselor;
     private javax.swing.JLabel lblDate;
     private javax.swing.JLabel lblStatus;

@@ -8,9 +8,8 @@ import java.sql.Time;
 //Methods to interact with the Appointments Table
 public interface AppointmentDAO {
     List<Appointment> getAppointments();
-    void registerAppointment(Appointment appointment);
-    void updateAppointment(Appointment appointment);
-    void deleteAppointment(int id);
+    boolean registerAppointment(Appointment appointment);
+    boolean updateAppointment(Appointment appointment);
     List<Appointment> getAppointmentsByStudent(String name);
     boolean hasConflict(String counselor, Date date, Time time);
 }
