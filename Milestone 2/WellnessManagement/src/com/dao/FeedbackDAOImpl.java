@@ -1,4 +1,5 @@
 package com.dao;
+
 import com.model.*;
 
 import java.sql.Connection;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FeedbackDAOImpl implements FeedbackDAO {
+
     private Connection conn;
 
     public FeedbackDAOImpl(Connection conn) {
@@ -16,38 +18,23 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     //retrieves records from Feedback table
-    public ArrayList<Feedback> getFeedback() {
-        String sql = "SELECT * FROM feedback";
+    public List<Feedback> getAllFeedback() {
+        List<Feedback> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement("SELECT * FROM feedback"); ResultSet rs = stmt.executeQuery()) {
 
-        ArrayList<Feedback> FeedbackList = new ArrayList<Feedback>();
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            ResultSet result = stmt.executeQuery();
-
-            //adds record details to feedback object which is then appended to a details object ArrayList
-            while (result.next()){
-                Feedback fb = new Feedback();
-
-                fb.setId(result.getInt("id"));
-                fb.setStudent(result.getString("student"));
-                fb.setRating(result.getInt("rating"));
-
-                
-                String comments = result.getString("comments");
-                
-                fb.setComments(comments);
-
-                FeedbackList.add(fb);
+            while (rs.next()) {
+                Feedback f = new Feedback();
+                f.setId(rs.getInt("id"));
+                f.setStudent(rs.getString("student"));
+                f.setRating(rs.getInt("rating"));
+                f.setComments(rs.getString("comments"));
+                list.add(f);
             }
 
-
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
-
-        return FeedbackList;
+        return list;
     }
 
     //adds new record to feedback table

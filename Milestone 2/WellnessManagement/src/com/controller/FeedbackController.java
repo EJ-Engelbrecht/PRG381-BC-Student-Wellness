@@ -25,34 +25,27 @@ public class FeedbackController {
         }
     }
 
-    public void submitFeedback(JTextField txtStudent, JComboBox<Integer> cbRating, JTextArea txtComments) {
-        try {
-            String student = txtStudent.getText().trim();
-            int rating = (int) cbRating.getSelectedItem();
-            String comments = txtComments.getText().trim();
-
-            if (student.isEmpty() || comments.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Please fill in all fields.");
-                return;
-            }
-
-            Feedback fb = new Feedback();
-            
-            fb.setStudent(student);
-            fb.setRating(rating);
-            fb.setComments(comments);
-            
-            feedbackDAOImpl.registerFeedback(fb);
-            JOptionPane.showMessageDialog(null, "Feedback submitted!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error submitting feedback: \n" + e.getMessage());
+   public void submitFeedback(Feedback fb) {
+    try {
+        // Basic validation
+        if (fb.getStudent() == null || fb.getStudent().trim().isEmpty() ||
+            fb.getComments() == null || fb.getComments().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+            return;
         }
+
+        feedbackDAOImpl.registerFeedback(fb);
+        JOptionPane.showMessageDialog(null, "✅ Feedback submitted!");
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "❌ Error submitting feedback:\n" + e.getMessage());
     }
+}
+
 
     public void populateTable(JTable table) {
         try {
-            List<Feedback> feedbackList = feedbackDAOImpl.getFeedback();
+            List<Feedback> feedbackList = feedbackDAOImpl.getAllFeedback();
             DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Student", "Rating", "Comments"}, 0);
 
             for (Feedback fb : feedbackList) {
@@ -109,4 +102,9 @@ public class FeedbackController {
             JOptionPane.showMessageDialog(null, "Error updating feedback: " + e.getMessage());
         }
     }
+    
+    public List<Feedback> getAllFeedback() {
+    return feedbackDAOImpl.getAllFeedback();
+}
+
 }

@@ -1,11 +1,11 @@
 package com.dao;
 
 import com.model.*;
-import java.util.ArrayList;
+import java.util.List;
 
 //Methods to interact with the Feedback Table
 interface FeedbackDAO {
-    ArrayList<Feedback> getFeedback();
+    List<Feedback> getAllFeedback();
     void registerFeedback(Feedback feedback);
     void updateFeedback(Feedback feedback);
     void deleteFeedback(int id);
