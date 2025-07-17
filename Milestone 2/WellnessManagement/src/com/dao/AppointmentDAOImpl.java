@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Date;
 import java.time.LocalTime;
 import java.sql.Time;
-
+import java.sql.Statement;
 
 public class AppointmentDAOImpl implements AppointmentDAO {
     private Connection conn;
@@ -18,6 +18,30 @@ public class AppointmentDAOImpl implements AppointmentDAO {
     public AppointmentDAOImpl(Connection conn) {
         this.conn = conn;
     }
+    public List<Appointment> getUpcomingAppointments() {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT * FROM appointments WHERE date >= CURRENT_DATE ORDER BY date, time";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query);
+            ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Appointment a = new Appointment();
+                a.setId(rs.getInt("id"));
+                a.setStudent(rs.getString("student")); 
+                a.setCounselor(rs.getString("counselor"));
+                a.setDate(rs.getDate("date"));
+                a.setTime(rs.getTime("time"));
+                a.setStatus(rs.getString("status"));
+                appointments.add(a);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+
 
     //retrieves appointment record list from database
     public List<Appointment> getAppointments() {
@@ -106,29 +130,62 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 }
 
 
+
     //Updates Appointment details based on "Student" Criteria
-    public void updateAppointment(Appointment appointment) {
-        //prevents sql injection
-        String sql = "UPDATE appointments SET counselor = ?, date = ?, time = ?, status = ? WHERE student = ?";
+    public boolean updateAppointment(Appointment appointment){
+        String sql = "UPDATE appointments SET student = ?, counselor = ?, date = ?, time = ?, status = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, appointment.getCounselor());
+            stmt.setString(1, appointment.getStudent());
+            stmt.setString(2, appointment.getCounselor());
+            stmt.setDate(3, new java.sql.Date(appointment.getDate().getTime()));
+            stmt.setTime(4, appointment.getTime());
+            stmt.setString(5, appointment.getStatus());
+            stmt.setInt(6, appointment.getId());
 
-            //Converts standard date format to sql date format
-            java.util.Date utilDate = appointment.getDate();
-            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-
-            stmt.setDate(2, sqlDate);
-            stmt.setTime(3, appointment.getTime());
-            stmt.setString(4, appointment.getStudent());
-
-            stmt.executeUpdate();
-
-            System.out.println("Appointment Updated");
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Appointment not updated");
+            e.printStackTrace();  // or log it
+            return false;
         }
+    }
+    public boolean hasTimeConflict(int id, String date, String time, String counselor) {
+    String sql = """
+        SELECT * FROM appointments
+        WHERE date = ? AND counselor = ? AND id != ?
+    """;
+
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, date);
+        stmt.setString(2, counselor);
+        stmt.setInt(3, id);
+
+        ResultSet rs = stmt.executeQuery();
+
+        // Convert current time string to minutes
+        int newTimeMins = toMinutes(time);
+
+        while (rs.next()) {
+            String existingTime = rs.getString("time");
+            int existingTimeMins = toMinutes(existingTime);
+
+            if (Math.abs(existingTimeMins - newTimeMins) < 30) {
+                return true; // Conflict found
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return false; // No conflict
+}
+
+    // Helper method to convert "HH:mm" to total minutes
+    private int toMinutes(String time) {
+        time = time.trim();
+        String[] parts = time.split(":");
+        return Integer.parseInt(parts[0].trim()) * 60 + Integer.parseInt(parts[1].trim());
     }
 
 
@@ -139,9 +196,7 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-
-            stmt.executeUpdate();
-
+            int rowsAffected = stmt.executeUpdate();
             System.out.println("Appointment Removed");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -151,7 +206,7 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 
     public boolean hasConflict(String counselor, Date date, Time time) {
         String sql = "SELECT COUNT(*) FROM appointments WHERE counselor = ?, date = ?, time = ?";
-
+                
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, counselor);
