@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 import static com.dao.DBConnection.getConnection;
 
@@ -23,6 +24,7 @@ public class AppointmentController {
             e.printStackTrace();
         }
     }
+    
 
     public boolean bookAppointment(Appointment a) {
         if (appointmentDAOImpl.hasConflict(a.getCounselor(), a.getDate(), a.getTime())) {
@@ -45,4 +47,25 @@ public class AppointmentController {
     public List<Appointment> getAllAppointments() {
         return appointmentDAOImpl.getAppointments();
     }
+        public List<Appointment> getUpcomingAppointments() {
+        return appointmentDAOImpl.getUpcomingAppointments();
+    }
+    
+    public DefaultTableModel createAppointmentTableModel(List<Appointment> appointments) {
+        String[] columns = {"ID","Date", "Time","Student", "Counselor", "Status"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        for (Appointment a : appointments) {
+            model.addRow(new Object[]{
+                a.getId(),
+                a.getDate(),
+                a.getTime(),
+                a.getStudent(),
+                a.getCounselor(),
+                a.getStatus()
+            });
+        }
+        return model;
+    }
+
 }
+
