@@ -96,7 +96,7 @@ public class FeedbackPanel extends javax.swing.JPanel {
             }
         });
 
-        btnEdit.setText("Edit");
+        btnEdit.setText("Update");
         btnEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEditActionPerformed(evt);

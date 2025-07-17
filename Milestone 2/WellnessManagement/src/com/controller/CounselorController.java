@@ -1,41 +1,59 @@
 package com.controller;
 
 import com.dao.CounselorDAOImpl;
+import com.dao.DBConnection;
 import com.model.Counselor;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
-
-import static com.dao.DBConnection.getConnection;
 import javax.swing.*;
-
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 public class CounselorController {
 
-    private CounselorDAOImpl counselorDAO;
+    private CounselorDAOImpl counselorDAOImpl;  // ✅ correct type
 
     public CounselorController() {
         try {
-            Connection conn = getConnection();
-            this.counselorDAO = new CounselorDAOImpl(conn);
+            Connection conn = DBConnection.getConnection();
+            counselorDAOImpl = new CounselorDAOImpl(conn);  // ✅ initialize properly
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
             e.printStackTrace();
         }
     }
 
-    public boolean addCounselor(Counselor counselor) {
-        counselorDAO.registerCounselor(counselor);
-        return true;
+    public void addCounselor(Counselor counselor) {
+        counselorDAOImpl.registerCounselor(counselor);
     }
 
     public boolean deleteCounselor(int id) {
-        counselorDAO.deleteCounselor(id);
-        
-        return false;
+        counselorDAOImpl.deleteCounselor(id);  // ✅ use the correct DAO
+        return true;
     }
 
     public List<Counselor> getAllCounselors() {
-        return counselorDAO.getCounselors();
+        return counselorDAOImpl.getCounselors();  // ✅ use the correct DAO
     }
+    
+    public void updateCounselor(Counselor counselor) {
+    counselorDAOImpl.updateCounselor(counselor);
+    }
+    public void populateTable(JTable table) {
+    List<Counselor> counselorList = getAllCounselors();
+
+    DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Name", "Specialization", "Availability"}, 0);
+
+    for (Counselor c : counselorList) {
+        model.addRow(new Object[]{
+            c.getId(),
+            c.getName(),
+            c.getSpecialization(),
+            c.isAvailable() ? "Available" : "Unavailable"
+        });
+    }
+
+    table.setModel(model);
 }
+}
+
+

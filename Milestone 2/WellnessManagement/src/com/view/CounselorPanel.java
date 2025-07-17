@@ -4,17 +4,31 @@
  */
 package com.view;
 
+import com.controller.CounselorController;
+import com.model.Counselor;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author chesa
  */
 public class CounselorPanel extends javax.swing.JPanel {
 
+    private CounselorController controller;
+
     /**
      * Creates new form CounselorPanel1
      */
     public CounselorPanel() {
         initComponents();
+        controller = new CounselorController();
+        btnViewAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnViewAllActionPerformed(evt);
+            }
+        });
+        btnUpdate.addActionListener(this::btnUpdateActionPerformed);
+
     }
 
     /**
@@ -30,12 +44,14 @@ public class CounselorPanel extends javax.swing.JPanel {
         lblSpecialization = new javax.swing.JLabel();
         lblAvailability = new javax.swing.JLabel();
         tfName = new javax.swing.JTextField();
-        tfSpecialization = new javax.swing.JTextField();
         cbAvailability = new javax.swing.JComboBox<>();
         btnAdd = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnViewAll = new javax.swing.JButton();
+        cbSpecial = new javax.swing.JComboBox<>();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblCounselors = new javax.swing.JTable();
 
         lblName.setText("Name:");
 
@@ -46,12 +62,44 @@ public class CounselorPanel extends javax.swing.JPanel {
         cbAvailability.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Available", "Unavailable" }));
 
         btnAdd.setText("Add");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnViewAll.setText("View All");
+        btnViewAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnViewAllActionPerformed(evt);
+            }
+        });
+
+        cbSpecial.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Academic Performance Counseling", "Study Skills & Time Management", "Career Guidance & Planning", "Scholarship & Bursary Support", "General Mental Health", "Anxiety & Stress Management", "Depression Support", "Trauma & Grief Counseling", "Mindfulness & Emotional Regulation", "Conflict Resolution", "Peer Relationship Guidance", "Communication & Social Skills", "Self-Esteem & Confidence Building", "Adjustment & Transition CounselingLGBTQIA+ Support", "Gender-Based Violence Support", "Disability Support Services", "Cultural Adaptation / International Student Support" }));
+
+        tblCounselors.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Name", "Specialization", "Availability"
+            }
+        ));
+        jScrollPane1.setViewportView(tblCounselors);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -59,21 +107,16 @@ public class CounselorPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(tfName, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblAvailability)
-                            .addComponent(lblSpecialization))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(tfSpecialization)
-                            .addComponent(cbAvailability, 0, 241, Short.MAX_VALUE))
-                        .addGap(6, 6, 6))))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblAvailability)
+                    .addComponent(lblSpecialization)
+                    .addComponent(lblName))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(cbAvailability, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbSpecial, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tfName))
+                .addGap(6, 6, 6))
             .addGroup(layout.createSequentialGroup()
                 .addGap(169, 169, 169)
                 .addComponent(btnAdd)
@@ -84,18 +127,22 @@ public class CounselorPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnViewAll)
                 .addGap(0, 232, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(13, 13, 13)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblName)
                     .addComponent(tfName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSpecialization)
-                    .addComponent(tfSpecialization, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbSpecial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblAvailability)
@@ -106,9 +153,118 @@ public class CounselorPanel extends javax.swing.JPanel {
                     .addComponent(btnUpdate)
                     .addComponent(btnDelete)
                     .addComponent(btnViewAll))
-                .addContainerGap(298, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(16, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        String name = tfName.getText().trim();
+        String specialization = (String) cbSpecial.getSelectedItem();
+        String availabilityStr = (String) cbAvailability.getSelectedItem();
+        boolean available = "Available".equalsIgnoreCase(availabilityStr);
+
+        if (name.isEmpty() || specialization == null || specialization.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+            return;
+        }
+
+        Counselor counselor = new Counselor();
+        counselor.setName(name);
+        counselor.setSpecialization(specialization);
+        counselor.setAvailability(available);
+
+        CounselorController controller = new CounselorController();
+        controller.addCounselor(counselor);
+
+        JOptionPane.showMessageDialog(null, "✅ Counselor added successfully!");
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnViewAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAllActionPerformed
+        try {
+            java.util.List<com.model.Counselor> counselors = controller.getAllCounselors();
+
+            // Get the table model and clear it
+            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblCounselors.getModel();
+            model.setRowCount(0);
+
+            // Populate the table
+            for (com.model.Counselor c : counselors) {
+                Object[] row = {
+                    c.getId(),
+                    c.getName(),
+                    c.getSpecialization(),
+                    c.isAvailable()
+                };
+                model.addRow(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "⚠️ Could not load counselors.");
+        }
+    }//GEN-LAST:event_btnViewAllActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        int selectedRow = tblCounselors.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "⚠️ Please select a counselor to delete.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this counselor?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try {
+            int id = (int) tblCounselors.getValueAt(selectedRow, 0);  // column 0 is ID
+            controller.deleteCounselor(id);
+            ((javax.swing.table.DefaultTableModel) tblCounselors.getModel()).removeRow(selectedRow);
+            JOptionPane.showMessageDialog(this, "✅ Counselor deleted.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "❌ Failed to delete counselor: " + e.getMessage());
+        }
+
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        int selectedRow = tblCounselors.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "⚠️ Please select a counselor to update.");
+            return;
+        }
+
+        try {
+            int id = (int) tblCounselors.getValueAt(selectedRow, 0);  // ID column
+            String name = (String) tblCounselors.getValueAt(selectedRow, 1);  // optional display
+
+            String specialization = (String) cbSpecial.getSelectedItem();
+            String availabilityStr = (String) cbAvailability.getSelectedItem();
+            boolean availability = availabilityStr.equalsIgnoreCase("Available");
+
+            if (specialization == null || availabilityStr == null) {
+                JOptionPane.showMessageDialog(this, "⚠️ Please select specialization and availability.");
+                return;
+            }
+
+            Counselor counselor = new Counselor();
+            counselor.setId(id);
+            counselor.setName(name);
+            counselor.setSpecialization(specialization);
+            counselor.setAvailability(availability);
+
+            controller.updateCounselor(counselor);
+            controller.populateTable(tblCounselors);
+            JOptionPane.showMessageDialog(this, "✅ Counselor updated successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "❌ Error updating counselor: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -117,10 +273,18 @@ public class CounselorPanel extends javax.swing.JPanel {
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btnViewAll;
     private javax.swing.JComboBox<String> cbAvailability;
+    private javax.swing.JComboBox<String> cbSpecial;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblAvailability;
     private javax.swing.JLabel lblName;
     private javax.swing.JLabel lblSpecialization;
+    private javax.swing.JTable tblCounselors;
     private javax.swing.JTextField tfName;
-    private javax.swing.JTextField tfSpecialization;
     // End of variables declaration//GEN-END:variables
+
+    private void clearForm() {
+        tfName.setText("");
+        cbSpecial.setSelectedIndex(0);
+        cbAvailability.setSelectedIndex(0);
+    }
 }

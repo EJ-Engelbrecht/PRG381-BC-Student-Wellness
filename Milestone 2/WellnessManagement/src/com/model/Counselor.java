@@ -1,10 +1,19 @@
 package com.model;
 
 public class Counselor {
+    private int id;
     private String name;
     private String specialization;
     private boolean availability;
 
+   public Integer getId(){
+       return this.id;
+   }
+   
+   public void setId(Integer id){
+       this.id = id;
+   }
+            
     public String getName() {
         return this.name;
     }
