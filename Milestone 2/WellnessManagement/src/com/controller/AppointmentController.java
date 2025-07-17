@@ -24,7 +24,6 @@ public class AppointmentController {
             e.printStackTrace();
         }
     }
-    
 
     public boolean bookAppointment(Appointment a) {
         if (appointmentDAOImpl.hasConflict(a.getCounselor(), a.getDate(), a.getTime())) {
@@ -35,8 +34,6 @@ public class AppointmentController {
         return true;
     }
 
-
-
     public List<Appointment> getAppointmentsByStudent(String studentName) {
         return appointmentDAOImpl.getAppointmentsByStudent(studentName);
     }
@@ -44,12 +41,13 @@ public class AppointmentController {
     public List<Appointment> getAllAppointments() {
         return appointmentDAOImpl.getAppointments();
     }
-        public List<Appointment> getUpcomingAppointments() {
+
+    public List<Appointment> getUpcomingAppointments() {
         return appointmentDAOImpl.getUpcomingAppointments();
     }
-    
+
     public DefaultTableModel createAppointmentTableModel(List<Appointment> appointments) {
-        String[] columns = {"ID","Date", "Time","Student", "Counselor", "Status"};
+        String[] columns = {"ID", "Date", "Time", "Student", "Counselor", "Status"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
         for (Appointment a : appointments) {
             model.addRow(new Object[]{
@@ -64,5 +62,9 @@ public class AppointmentController {
         return model;
     }
 
-}
+    public boolean deleteCancelledAppointments() {
+        return appointmentDAOImpl.deleteCancelledAppointments();
 
+    }
+
+}

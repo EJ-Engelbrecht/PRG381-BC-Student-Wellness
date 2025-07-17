@@ -12,4 +12,6 @@ public interface AppointmentDAO {
     boolean updateAppointment(Appointment appointment);
     List<Appointment> getAppointmentsByStudent(String name);
     boolean hasConflict(String counselor, Date date, Time time);
+    boolean deleteCancelledAppointments();
+
 }
