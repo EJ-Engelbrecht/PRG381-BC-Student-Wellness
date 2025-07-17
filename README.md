@@ -114,3 +114,58 @@ C:\Program Files\Apache Software Foundation\Tomcat 9.0\lib
         - Correct JDBC URL: `jdbc:postgresql://localhost:5432/wellness`
         - Username: `postgres`
         - Password: `sFicA`
+
+# 📘 PRG381 Milestone 2 – BC Student Wellness Management System
+
+This is a **Java desktop application** for managing student wellness services at Belgium Campus. Built with **Java Swing**, **JavaDB**, and designed using **OOP principles and MVC architecture**, the system provides counselors, students, and administrators with tools to manage appointments, counselor details, and student feedback.
+
+---
+
+# 🔧 Apache Derby (JavaDB) download guide – Embedded Mode
+
+1. Go to the official Derby website:  
+   👉 https://db.apache.org/derby/derby_downloads.html
+
+2. Download the **Binary Distribution** ZIP (e.g., `db-derby-10.17.1.0-bin.zip`)
+
+3. Extract it to a folder such as: C:\src\Java DB\db-derby-10.17.1.0-bin  
+
+---
+
+## ✅ Key Features
+
+- **Appointment Management**
+  - Book, view, update, and cancel appointments
+  - Select counselor, date, time, and set status
+
+- **Counselor Management**
+  - Add, view, update, and remove counselors
+  - Manage specialization and availability
+
+- **Feedback Management**
+  - Students can rate and leave feedback
+  - View, edit, and delete feedback entries
+
+- **User Interface**
+  - Built with **Java Swing**
+  - Uses tabbed panes and/or navigation menus
+  - Input validation and confirmation dialogs
+  - Exception handling for DB operations
+
+---
+
+## 🧠 Technologies Used
+
+- Java SE 21  
+- Java Swing  
+- JavaDB (Derby)  
+- MVC Pattern  
+- Git & GitHub for version control
+
+---
+
+## 🔧 How to Run
+
+1. Open the project in **NetBeans**.
+2. Ensure **JavaDB** is configured and running.
+3. Run the main class in the base package to launch the application dashboard.
