@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.model.*;
+import java.sql.Statement;
 
 public class CounselorDAOImpl implements CounselorDAO {
     private Connection conn;
@@ -29,7 +30,7 @@ public class CounselorDAOImpl implements CounselorDAO {
             //creates, with each record, a counselor object with record details added
             while (result.next()){
                 Counselor cs = new Counselor();
-
+                cs.setId(result.getInt("id"));
                 cs.setName(result.getString("name"));
                 cs.setSpecialization(result.getString("specialization"));
                 cs.setAvailability(result.getBoolean("availability"));
@@ -47,24 +48,33 @@ public class CounselorDAOImpl implements CounselorDAO {
         return Counselors;
     }
 
-    //adds new record to counselor table
     public void registerCounselor(Counselor counselor) {
-        //prevents sql injection
-        String sql = "INSERT INTO counselors (name, specialization, availability) VALUES(?, ?, ?)";
+    String sql = "INSERT INTO counselors (name, specialization, availability) VALUES (?, ?, ?)";
+    try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        stmt.setString(1, counselor.getName());
+        stmt.setString(2, counselor.getSpecialization());
+        stmt.setBoolean(3, counselor.isAvailable());
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, counselor.getName());
-            stmt.setString(2, counselor.getSpecialization());
-            stmt.setBoolean(3, counselor.isAvailable());
+        int affectedRows = stmt.executeUpdate();
 
-            stmt.executeUpdate();
-
-            System.out.println("Counselor added");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Counselor not added");
+        if (affectedRows == 0) {
+            throw new SQLException("Creating counselor failed, no rows affected.");
         }
+
+        try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                counselor.setId(generatedKeys.getInt(1)); // Set the generated ID on the object
+                System.out.println("Counselor added with ID: " + counselor.getId());
+            } else {
+                throw new SQLException("Creating counselor failed, no ID obtained.");
+            }
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        System.out.println("Counselor not added.");
     }
+}
 
     //updates record based on "name" criteria
     public void updateCounselor(Counselor counselor) {
@@ -101,4 +111,10 @@ public class CounselorDAOImpl implements CounselorDAO {
             System.out.println("Counselor not Removed");
         }
     }
+    
+    public boolean addCounselor(Counselor counselor) {
+
+    return true;
+}
+
 }
